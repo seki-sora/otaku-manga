@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
+  <url>
+    <loc>https://otaku-manga.site/</loc>
+    <lastmod>2025-02-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Page 1 -->
+  <url>
+    <loc>https://otaku-manga.site/akira-momose-first-love-is-a-failure.html</loc>
+    <lastmod>2025-02-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Page 2 -->
+  <url>
+    <loc>https://otaku-manga.site/i-got-a-new-skill-every-time-i-was-exiled.html</loc>
+    <lastmod>2025-02-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Page 3 -->
+  <url>
+    <loc>https://otaku-manga.site/the-quintessential-quintuplets.html</loc>
+    <lastmod>2025-02-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Add more URLs for your manga chapters if needed -->
+</urlset>

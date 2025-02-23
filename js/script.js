@@ -48,7 +48,7 @@ async function loadChapter(chapterNumber) {
       const img = new Image();
       img.src = `${basePath}${mangaSlug}-${currentPanel}.webp`;
       img.alt = `Panel ${currentPanel}`;
-      img.loading = "lazy";
+      // img.loading = "lazy";
       img.style.width = "100%";
       img.style.display = "block";
       img.style.marginBottom = "20px";

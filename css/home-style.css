@@ -6,11 +6,7 @@
   --scroll-bar-hovered: #888;
   --link-color: #666;
   --link-hover: #222;
-  --book-cover: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.7),
-    rgba(0, 0, 0, 0.4)
-  );
+  --book-cover: rgba(0, 0, 0, 0.8);
   --footer-bg: #f8f9fa;
 }
 
@@ -22,11 +18,7 @@
   --scroll-bar-hovered: #333;
   --link-color: #bbbbbb;
   --link-hover: #808080;
-  --book-cover: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.8),
-    rgba(255, 255, 255, 0.005)
-  );
+  --book-cover: rgba(0, 0, 0, 0.8);
   --footer-bg: #1e1e1e;
 }
 

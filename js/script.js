@@ -18,6 +18,9 @@ function toggleTheme() {
 /* Load Manga Chapter Panels (Optimized with Preloading and Concurrent Loading) */
 async function loadChapter(chapterNumber) {
   currentChapter = Number(chapterNumber);
+  // Store the current chapter so that it can be reloaded later
+  localStorage.setItem("lastChapter", currentChapter);
+
   const chapterSelect = document.getElementById("chapterSelect");
   if (chapterSelect) {
     chapterSelect.value = currentChapter;
@@ -38,7 +41,7 @@ async function loadChapter(chapterNumber) {
   const basePath = `../manga/${mangaSlug}/chapter-${currentChapter}/`;
 
   let panelNumber = 1;
-  const batchSize = 5; // Adjust this number based on your server/network capability
+  const batchSize = 5; // Adjust based on your server/network capability
 
   // Load images in batches concurrently until one fails
   while (true) {
@@ -48,12 +51,12 @@ async function loadChapter(chapterNumber) {
       const img = new Image();
       img.src = `${basePath}${mangaSlug}-${currentPanel}.webp`;
       img.alt = `Panel ${currentPanel}`;
+      // Consider removing lazy loading if it's delaying the load
       // img.loading = "lazy";
       img.style.width = "100%";
       img.style.display = "block";
       img.style.marginBottom = "20px";
 
-      // Wrap image loading in a promise to capture load or error
       batchPromises.push(
         new Promise((resolve) => {
           img.onload = () => resolve({ success: true, image: img });
@@ -62,11 +65,8 @@ async function loadChapter(chapterNumber) {
       );
     }
 
-    // Wait for the current batch to complete loading
     const results = await Promise.all(batchPromises);
     let encounteredError = false;
-
-    // Process results in sequential order to maintain correct panel sequence
     for (let i = 0; i < results.length; i++) {
       const result = results[i];
       if (!result.success) {
@@ -75,10 +75,8 @@ async function loadChapter(chapterNumber) {
       }
       chapterContentDiv.appendChild(result.image);
       loadedPanels.push(result.image);
-      panelNumber++; // Increase for each successfully loaded panel
+      panelNumber++;
     }
-
-    // Stop further attempts if any image in the batch fails to load
     if (encounteredError) {
       if (loadedPanels.length === 0) {
         chapterContentDiv.innerHTML =
@@ -216,6 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load default chapter
-  loadChapter(chapterSelect ? chapterSelect.value : 1);
+  // Load the last-read chapter if it exists; otherwise, load the default chapter.
+  const savedChapter = localStorage.getItem("lastChapter");
+  loadChapter(chapterSelect ? (savedChapter || chapterSelect.value) : savedChapter || 1);
 });

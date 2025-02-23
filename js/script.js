@@ -71,7 +71,7 @@ function loadChapter(chapterNumber) {
     // Convert the manga title to a URL-friendly slug
     const mangaSlug = mangaTitle.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
 
-    // Build the base path: e.g., "../manga/when-rain-meets-tears/1/"
+    // Build the base path: e.g., "../manga/when-rain-meets-tears/chapter-1/"
     const basePath = `../manga/${mangaSlug}/chapter-${chapterNumber}/`;
     let panelNumber = 1;
 

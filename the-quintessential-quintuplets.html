@@ -52,17 +52,21 @@
         />
         <div class="info">
           <h2 id="manga-title">The Quintessential Quintuplets</h2>
-          <br />
-          <p><strong>Author:</strong> Harekawa Shinta</p>
-          <br />
-          <p><strong>Genre:</strong> Manga, Romance, Drama</p>
-          <br />
-          <p>
-            <strong>Description:</strong>
-            A high school romantic comedy with five times the cute girls! A high school boy must work part-time to help five sisters study so they can graduate, but the only thing these quintuplets have in common is that they all hate studying!
-          </p>
+          <br>
+          <p><strong>Author:</strong> Haruba Negi</p>
+          <br>
+          <p><strong>Genre:</strong> Manga, Romance, Comedy, Drama, Harem, School Life</p>
         </div>
       </div>
+
+      <!-- Place the description below the book-header container -->
+      <p class="description">
+        A high school romantic comedy with five times the cute girls! A high school boy must work part-time to help five sisters study so they can graduate, but the only thing these quintuplets have in common is that they all hate studying!
+        <br>
+        <br>
+        Five girls who want to do anything but study, and their tutor: a high school boy who’s got book smarts and not much else. Futaro Uesugi took the tutoring gig because he was desperate for cash, but when his students—the five beautiful daughters of a wealthy businessman—find five times the excuses to slack off, what can he do?! At this rate, the sisters won’t graduate, so if he wants to get paid, Futaro must think of a plan to suit each of them… Which feels hopeless when five out of five of them think he’s a loser!
+      </p>
+      <br>
 
       <!-- Chapter selection dropdown -->
       <div style="text-align: center; margin-bottom: 20px">
@@ -73,14 +77,25 @@
       </div>
 
       <!-- Download Button -->
-      <div class="button-wrapper" style="text-align: center; margin-bottom: 20px">
+      <div
+        class="button-wrapper"
+        style="text-align: center; margin-bottom: 20px"
+      >
         <button id="downloadPdfBtn" class="c-btn">
           <span class="c-btn__label">
             Download
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 15 15"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 d="M7.5 1.05c.248 0 .45.201.45.45v7.913l2.231-2.232c.175-.175.46-.175.636 0 .176.176.176.461 0 .637L7.818 9.818c-.176.175-.461.175-.637 0L4.182 7.182c-.175-.176-.175-.461 0-.637.176-.175.461-.175.637 0L7.05 8.413V1.5c0-.248.202-.45.45-.45zm-5 8.95c.276 0 .5.224.5.5v1.5c0 .554.446 1 1 1h7c.554 0 1-.447 1-1V10.5c0-.276.224-.5.5-.5s.5.224.5.5V13c0 1.105-.894 2-2 2H3.996C2.89 15 2 14.104 2 13V10.5c0-.276.224-.5.5-.5z"
-                fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
+                fill="currentColor"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
               ></path>
             </svg>
           </span>
@@ -97,7 +112,15 @@
         </p>
       </div>
       <!-- Navigation Buttons -->
-      <div class="chapter-navigation" style="margin-top: 10px; display: flex; justify-content: center; gap: 100px;">
+      <div
+        class="chapter-navigation"
+        style="
+          margin-top: 10px;
+          display: flex;
+          justify-content: center;
+          gap: 100px;
+        "
+      >
         <button id="prevChapterBtn" class="c-btn">Previous Chapter</button>
         <button id="nextChapterBtn" class="c-btn">Next Chapter</button>
       </div>

@@ -1,176 +1,184 @@
-// Function to apply theme remains unchanged
-function applyTheme(theme) {
-  document.body.setAttribute("data-theme", theme);
-  localStorage.setItem("theme", theme); // Save theme to localStorage
-}
+     /* Global Variables */
+     let loadedPanels = [];
+     let currentChapter = 1;
+     const totalChapters = 5;
 
-// Function to toggle theme
-function toggleTheme() {
-  const currentTheme = document.body.getAttribute("data-theme");
-  const newTheme = currentTheme === "dark" ? "light" : "dark";
-  applyTheme(newTheme);
-}
+     /* Theme Functions */
+     function applyTheme(theme) {
+       document.body.setAttribute("data-theme", theme);
+       localStorage.setItem("theme", theme);
+     }
 
-// Function to apply a theme
-function applyTheme(theme) {
-  document.body.setAttribute("data-theme", theme);
-  localStorage.setItem("theme", theme);
-}
+     function toggleTheme() {
+       const currentTheme = document.body.getAttribute("data-theme");
+       const newTheme = currentTheme === "dark" ? "light" : "dark";
+       applyTheme(newTheme);
+     }
 
-// Update toggle button class when toggling theme
-document.getElementById("toggleButton").addEventListener("click", () => {
-  toggleTheme();
+     /* Load Manga Chapter Panels */
+     function loadChapter(chapterNumber) {
+       currentChapter = Number(chapterNumber);
+       const chapterSelect = document.getElementById("chapterSelect");
+       if (chapterSelect) {
+         chapterSelect.value = currentChapter;
+       }
+       updateChapterButtons(currentChapter);
 
-  // Update toggle button state
-  const toggleButton = document.getElementById("toggleButton");
-  toggleButton.classList.toggle("dark");
-});
+       const mangaTitle = document.getElementById("manga-title").textContent;
+       const chapterContentDiv = document.getElementById("chapter-content");
+       chapterContentDiv.innerHTML = "";
+       loadedPanels = [];
 
-// Set initial theme on page load
-document.addEventListener("DOMContentLoaded", () => {
-  const savedTheme = localStorage.getItem("theme") || "light"; // Default to light
-  applyTheme(savedTheme);
+       const mangaSlug = mangaTitle
+         .toLowerCase()
+         .replace(/\s+/g, "-")
+         .replace(/[^a-z0-9\-]/g, "");
+       const basePath = `../manga/${mangaSlug}/chapter-${currentChapter}/`;
+       let panelNumber = 1;
 
-  // Update toggle button state
-  const toggleButton = document.getElementById("toggleButton");
-  if (savedTheme === "dark") {
-    toggleButton.classList.add("dark");
-  } else {
-    toggleButton.classList.remove("dark");
-  }
+       function loadNextPanel() {
+         const img = new Image();
+         img.src = `${basePath}${mangaSlug}-${panelNumber}.webp`;
+         img.alt = `Panel ${panelNumber}`;
+         img.style.width = "100%";
+         img.style.display = "block";
+         img.style.marginBottom = "20px";
 
-  // Load default chapter if chapter selector exists
-  const chapterSelect = document.getElementById("chapterSelect");
-  if (chapterSelect) {
-    loadChapter(chapterSelect.value);
-    chapterSelect.addEventListener("change", function () {
-      loadChapter(this.value);
-    });
-  }
+         img.onload = () => {
+           chapterContentDiv.appendChild(img);
+           loadedPanels.push(img);
+           panelNumber++;
+           loadNextPanel();
+         };
 
-  // Alternatively, if using chapter links in the header dropdown:
-  document
-    .querySelectorAll(".dropdown-content a[data-chapter]")
-    .forEach((link) => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const chapter = link.getAttribute("data-chapter");
-        loadChapter(chapter);
-        // Optionally update the dropdown or select element to reflect the change
-        if (chapterSelect) {
-          chapterSelect.value = chapter;
-        }
-      });
-    });
-});
+         img.onerror = () => {
+           if (panelNumber === 1) {
+             chapterContentDiv.innerHTML =
+               "<p>No panels found for this chapter.</p>";
+           }
+           // Stop loading further panels if an image fails to load.
+         };
+       }
+       loadNextPanel();
+     }
 
-// Function to load manga chapter panels
-let loadedPanels = []; // Store loaded panels globally
+     /* Update Navigation Button Visibility */
+     function updateChapterButtons(chapter) {
+       const prevBtn = document.getElementById("prevChapterBtn");
+       const nextBtn = document.getElementById("nextChapterBtn");
 
-function loadChapter(chapterNumber) {
-  const mangaTitle = document.getElementById("manga-title").textContent;
-  const chapterContentDiv = document.getElementById("chapter-content");
-  chapterContentDiv.innerHTML = ""; // Clear previous content
-  loadedPanels = []; // Reset loaded panels
+       prevBtn.style.display = chapter <= 1 ? "none" : "inline-flex";
+       nextBtn.style.display =
+         chapter >= totalChapters ? "none" : "inline-flex";
+     }
 
-  const mangaSlug = mangaTitle
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9\-]/g, "");
+     /* Download Chapter as PDF */
+     async function downloadChapterAsPDF() {
+       if (loadedPanels.length === 0) {
+         alert("No panels found for this chapter.");
+         return;
+       }
 
-  const basePath = `../manga/${mangaSlug}/chapter-${chapterNumber}/`;
-  let panelNumber = 1;
+       const { jsPDF } = window.jspdf;
+       const pdf = new jsPDF({
+         orientation: "portrait",
+         unit: "px",
+         format: "a4"
+       });
 
-  function loadNextPanel() {
-    const img = new Image();
-    img.src = `${basePath}${mangaSlug}-${panelNumber}.webp`;
-    img.alt = `Panel ${panelNumber}`;
-    img.style.width = "100%";
-    img.style.display = "block";
-    img.style.marginBottom = "20px";
+       const pageWidth = pdf.internal.pageSize.getWidth();
+       const pageHeight = pdf.internal.pageSize.getHeight();
 
-    img.onload = () => {
-      chapterContentDiv.appendChild(img);
-      loadedPanels.push(img); // Store image in the array
-      panelNumber++;
-      loadNextPanel();
-    };
+       for (let i = 0; i < loadedPanels.length; i++) {
+         const img = loadedPanels[i];
 
-    img.onerror = () => {
-      if (panelNumber === 1) {
-        chapterContentDiv.innerHTML =
-          "<p>No panels found for this chapter.</p>";
-      }
-      // Stop trying to load more images.
-    };
-  }
+         await new Promise((resolve) => {
+           if (img.complete) resolve();
+           else img.onload = resolve;
+         });
 
-  loadNextPanel();
-}
+         const canvas = document.createElement("canvas");
+         const context = canvas.getContext("2d");
+         canvas.width = img.naturalWidth;
+         canvas.height = img.naturalHeight;
+         context.drawImage(img, 0, 0);
+         const imgData = canvas.toDataURL("image/jpeg", 1.0);
 
+         let imgWidth = pageWidth;
+         let imgHeight = (canvas.height * pageWidth) / canvas.width;
+         if (imgHeight > pageHeight) {
+           imgHeight = pageHeight;
+           imgWidth = (canvas.width * pageHeight) / canvas.height;
+         }
+         pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+         if (i < loadedPanels.length - 1) {
+           pdf.addPage();
+         }
+       }
+       const mangaTitleSlug = document
+         .getElementById("manga-title")
+         .textContent.replace(/\s+/g, "-");
+       pdf.save(`${mangaTitleSlug}-Chapter-${currentChapter}.pdf`);
+     }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Existing initialization code...
+     /* Event Listeners Setup */
+     document.addEventListener("DOMContentLoaded", () => {
+       // Initialize theme and toggle button
+       const toggleButton = document.getElementById("toggleButton");
+       const savedTheme = localStorage.getItem("theme") || "light";
+       applyTheme(savedTheme);
+       if (savedTheme === "dark") {
+         toggleButton.classList.add("dark");
+       } else {
+         toggleButton.classList.remove("dark");
+       }
+       toggleButton.addEventListener("click", () => {
+         toggleTheme();
+         toggleButton.classList.toggle("dark");
+       });
 
-  // Add event listener for the download button if it exists
-  const downloadBtn = document.getElementById("downloadPdfBtn");
-  if (downloadBtn) {
-    downloadBtn.addEventListener("click", downloadChapterAsPDF);
-  }
-});
+       // Chapter selection dropdown listener
+       const chapterSelect = document.getElementById("chapterSelect");
+       if (chapterSelect) {
+         chapterSelect.addEventListener("change", function () {
+           loadChapter(this.value);
+         });
+       }
 
-// Function to download the current chapter as a PDF
-async function downloadChapterAsPDF() {
-  if (loadedPanels.length === 0) {
-    alert("No panels found for this chapter.");
-    return;
-  }
+       // Dropdown chapter links listener
+       document
+         .querySelectorAll(".dropdown-content a[data-chapter]")
+         .forEach((link) => {
+           link.addEventListener("click", (e) => {
+             e.preventDefault();
+             const chapter = link.getAttribute("data-chapter");
+             loadChapter(chapter);
+             if (chapterSelect) {
+               chapterSelect.value = chapter;
+             }
+           });
+         });
 
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "px",
-    format: "a4",
-  });
+       // Download button listener
+       const downloadBtn = document.getElementById("downloadPdfBtn");
+       if (downloadBtn) {
+         downloadBtn.addEventListener("click", downloadChapterAsPDF);
+       }
 
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
+       // Navigation buttons listeners
+       const prevBtn = document.getElementById("prevChapterBtn");
+       const nextBtn = document.getElementById("nextChapterBtn");
+       prevBtn.addEventListener("click", () => {
+         if (currentChapter > 1) {
+           loadChapter(currentChapter - 1);
+         }
+       });
+       nextBtn.addEventListener("click", () => {
+         if (currentChapter < totalChapters) {
+           loadChapter(currentChapter + 1);
+         }
+       });
 
-  for (let i = 0; i < loadedPanels.length; i++) {
-    const img = loadedPanels[i];
-
-    await new Promise((resolve) => {
-      if (img.complete) resolve();
-      else img.onload = resolve;
-    });
-
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    context.drawImage(img, 0, 0);
-
-    const imgData = canvas.toDataURL("image/jpeg", 1.0);
-
-    let imgWidth = pageWidth;
-    let imgHeight = (canvas.height * pageWidth) / canvas.width;
-    if (imgHeight > pageHeight) {
-      imgHeight = pageHeight;
-      imgWidth = (canvas.width * pageHeight) / canvas.height;
-    }
-
-    pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-
-    if (i < loadedPanels.length - 1) {
-      pdf.addPage();
-    }
-  }
-
-  const chapterSelect = document.getElementById("chapterSelect");
-  const chapterValue = chapterSelect ? chapterSelect.value : "chapter";
-  const mangaTitle = document
-    .getElementById("manga-title")
-    .textContent.replace(/\s+/g, "-");
-  pdf.save(`${mangaTitle}-Chapter-${chapterValue}.pdf`);
-}
-
+       // Load default chapter
+       loadChapter(chapterSelect ? chapterSelect.value : 1);
+     });

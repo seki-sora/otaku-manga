@@ -23,6 +23,7 @@
       href="./images/open-book.png"
       type="image/x-icon"
     />
+    <!-- Include jsPDF library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </head>
   <body>
@@ -33,13 +34,12 @@
         <div class="dropdown">
           <a href="#">Chapters</a>
           <div class="dropdown-content">
-            <!-- The chapter links below call a JavaScript function to load panels -->
+            <!-- Chapter links -->
             <a href="#" data-chapter="1">Chapter 1</a>
             <a href="#" data-chapter="2">Chapter 2</a>
             <a href="#" data-chapter="3">Chapter 3</a>
             <a href="#" data-chapter="4">Chapter 4</a>
             <a href="#" data-chapter="5">Chapter 5</a>
-            <!-- Add more chapters as needed -->
           </div>
         </div>
         <span class="toggle-container">
@@ -62,16 +62,17 @@
           <p><strong>Genre:</strong> Manga, Romance, Drama</p>
           <br />
           <p>
-            <strong>Description:</strong>Kugayama Hajime, a boy living in the
-            countryside, comes back to his old classmate Momose Akira, whom he
-            used to admire. Just as he is about to watch her from afar and enjoy
-            his sweet and sour youth, Akira makes an unexpected approach. And
-            there was a "fate" that was more than he could have imagined.
+            <strong>Description:</strong>
+            Kugayama Hajime, a boy living in the countryside, comes back to his
+            old classmate Momose Akira, whom he used to admire. Just as he is
+            about to watch her from afar and enjoy his sweet and sour youth,
+            Akira makes an unexpected approach. And there was a "fate" that was
+            more than he could have imagined.
           </p>
         </div>
       </div>
 
-      <!-- Chapter selection (optional if you prefer a dropdown) -->
+      <!-- Chapter selection dropdown -->
       <div style="text-align: center; margin-bottom: 20px">
         <label for="chapterSelect">Select Chapter:</label>
         <select id="chapterSelect">
@@ -80,10 +81,11 @@
           <option value="3">Chapter 3</option>
           <option value="4">Chapter 4</option>
           <option value="5">Chapter 5</option>
-          <!-- Add more options as needed -->
         </select>
       </div>
-      <div class="button-wrapper">
+
+      <!-- Download Button (only one instance now) -->
+      <div class="button-wrapper" style="text-align: center; margin-bottom: 20px;">
         <button id="downloadPdfBtn" class="c-btn">
           <span class="c-btn__label">
             Download
@@ -95,7 +97,7 @@
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M7.50005 1.04999C7.74858 1.04999 7.95005 1.25146 7.95005 1.49999V8.41359L10.1819 6.18179C10.3576 6.00605 10.6425 6.00605 10.8182 6.18179C10.994 6.35753 10.994 6.64245 10.8182 6.81819L7.81825 9.81819C7.64251 9.99392 7.35759 9.99392 7.18185 9.81819L4.18185 6.81819C4.00611 6.64245 4.00611 6.35753 4.18185 6.18179C4.35759 6.00605 4.64251 6.00605 4.81825 6.18179L7.05005 8.41359V1.49999C7.05005 1.25146 7.25152 1.04999 7.50005 1.04999ZM2.5 10C2.77614 10 3 10.2239 3 10.5V12C3 12.5539 3.44565 13 3.99635 13H11.0012C11.5529 13 12 12.5528 12 12V10.5C12 10.2239 12.2239 10 12.5 10C12.7761 10 13 10.2239 13 10.5V12C13 13.1041 12.1062 14 11.0012 14H3.99635C2.89019 14 2 13.103 2 12V10.5C2 10.2239 2.22386 10 2.5 10Z"
+                d="M7.5 1.05c.248 0 .45.201.45.45v7.913l2.231-2.232c.175-.175.46-.175.636 0 .176.176.176.461 0 .637L7.818 9.818c-.176.175-.461.175-.637 0L4.182 7.182c-.175-.176-.175-.461 0-.637.176-.175.461-.175.637 0L7.05 8.413V1.5c0-.248.202-.45.45-.45zm-5 8.95c.276 0 .5.224.5.5v1.5c0 .554.446 1 1 1h7c.554 0 1-.447 1-1V10.5c0-.276.224-.5.5-.5s.5.224.5.5V13c0 1.105-.894 2-2 2H3.996C2.89 15 2 14.104 2 13V10.5c0-.276.224-.5.5-.5z"
                 fill="currentColor"
                 fill-rule="evenodd"
                 clip-rule="evenodd"
@@ -105,9 +107,18 @@
         </button>
       </div>
 
-      <!-- Manga panels will load here -->
+      <!-- Manga panels container -->
       <div id="chapter-content" class="book-content manga-content">
-        <!-- Images will be appended here by JavaScript -->
+        <!-- Panels will be loaded here dynamically -->
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div
+        class="chapter-navigation"
+        style="margin-top: 10px; display: flex; justify-content: center; gap: 100px;"
+      >
+        <button id="prevChapterBtn" class="c-btn">Previous Chapter</button>
+        <button id="nextChapterBtn" class="c-btn">Next Chapter</button>
       </div>
     </section>
 

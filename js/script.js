@@ -15,7 +15,7 @@ function toggleTheme() {
   applyTheme(newTheme);
 }
 
-/* Load Manga Chapter Panels (Optimized with Batch Concurrent Loading) */
+/* Load Manga Chapter Panels (Optimized with Preloading and Concurrent Loading) */
 async function loadChapter(chapterNumber) {
   currentChapter = Number(chapterNumber);
   const chapterSelect = document.getElementById("chapterSelect");
@@ -77,10 +77,12 @@ async function loadChapter(chapterNumber) {
       loadedPanels.push(result.image);
       panelNumber++; // Increase for each successfully loaded panel
     }
+
     // Stop further attempts if any image in the batch fails to load
     if (encounteredError) {
       if (loadedPanels.length === 0) {
-        chapterContentDiv.innerHTML = "<p>No panels found for this chapter.</p>";
+        chapterContentDiv.innerHTML =
+          "<p>No panels found for this chapter.</p>";
       }
       break;
     }
@@ -111,7 +113,7 @@ async function downloadChapterAsPDF() {
   const pdf = new jsPDF({
     orientation: "portrait",
     unit: "px",
-    format: "a4"
+    format: "a4",
   });
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -177,16 +179,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Dropdown chapter links listener
-  document.querySelectorAll(".dropdown-content a[data-chapter]").forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const chapter = link.getAttribute("data-chapter");
-      loadChapter(chapter);
-      if (chapterSelect) {
-        chapterSelect.value = chapter;
-      }
+  document
+    .querySelectorAll(".dropdown-content a[data-chapter]")
+    .forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const chapter = link.getAttribute("data-chapter");
+        loadChapter(chapter);
+        if (chapterSelect) {
+          chapterSelect.value = chapter;
+        }
+      });
     });
-  });
 
   // Download button listener
   const downloadBtn = document.getElementById("downloadPdfBtn");

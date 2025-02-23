@@ -293,7 +293,7 @@ nav a:hover {
 /* --- Style the Select Dropdown --- */
 #chapterSelect {
   appearance: none;
-  padding: 5px 10px; /* Reduced padding for a sleeker look */
+  padding: 4px 8px; /* Reduced padding for a sleeker look */
   font-size: 1rem;
   font-weight: 500;
   border: 2px solid var(--border-color, #a090b6);

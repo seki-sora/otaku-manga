@@ -1,7 +1,6 @@
 /* Global Variables */
 let loadedPanels = [];
-let currentChapter = 1;
-const totalChapters = 5;
+let currentChapter = 1; // Starting chapter
 
 /* Theme Functions */
 function applyTheme(theme) {
@@ -15,6 +14,40 @@ function toggleTheme() {
   applyTheme(newTheme);
 }
 
+/* Check if a Chapter Exists by testing the first panel image */
+async function checkChapterExists(chapterNumber) {
+  const mangaTitleElem = document.getElementById("manga-title");
+  const mangaTitle = mangaTitleElem ? mangaTitleElem.textContent : "";
+  const mangaSlug = mangaTitle
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/g, "");
+  const basePath = `../manga/${mangaSlug}/chapter-${chapterNumber}/`;
+  const testImg = new Image();
+  testImg.src = `${basePath}${mangaSlug}-1.webp`; // testing first panel
+  return new Promise((resolve) => {
+    testImg.onload = () => resolve(true);
+    testImg.onerror = () => resolve(false);
+  });
+}
+
+/* Update Navigation Button Visibility Dynamically */
+async function updateChapterButtons(chapter) {
+  const prevBtn = document.getElementById("prevChapterBtn");
+  const nextBtn = document.getElementById("nextChapterBtn");
+
+  // Hide previous button on first chapter
+  if (prevBtn) {
+    prevBtn.style.display = chapter <= 1 ? "none" : "inline-flex";
+  }
+
+  // Dynamically check if next chapter exists
+  if (nextBtn) {
+    const exists = await checkChapterExists(chapter + 1);
+    nextBtn.style.display = exists ? "inline-flex" : "none";
+  }
+}
+
 /* Load Manga Chapter Panels (Optimized with Preloading and Concurrent Loading) */
 async function loadChapter(chapterNumber) {
   currentChapter = Number(chapterNumber);
@@ -25,7 +58,9 @@ async function loadChapter(chapterNumber) {
   if (chapterSelect) {
     chapterSelect.value = currentChapter;
   }
-  updateChapterButtons(currentChapter);
+
+  // Update navigation buttons (which now update dynamically)
+  await updateChapterButtons(currentChapter);
 
   const mangaTitleElem = document.getElementById("manga-title");
   const mangaTitle = mangaTitleElem ? mangaTitleElem.textContent : "";
@@ -50,9 +85,8 @@ async function loadChapter(chapterNumber) {
       const currentPanel = panelNumber + i;
       const img = new Image();
       img.src = `${basePath}${mangaSlug}-${currentPanel}.webp`;
+      console.log(img.src);
       img.alt = `Panel ${currentPanel}`;
-      // Consider removing lazy loading if it's delaying the load
-      // img.loading = "lazy";
       img.style.width = "100%";
       img.style.display = "block";
       img.style.marginBottom = "20px";
@@ -85,19 +119,9 @@ async function loadChapter(chapterNumber) {
       break;
     }
   }
-}
 
-/* Update Navigation Button Visibility */
-function updateChapterButtons(chapter) {
-  const prevBtn = document.getElementById("prevChapterBtn");
-  const nextBtn = document.getElementById("nextChapterBtn");
-
-  if (prevBtn) {
-    prevBtn.style.display = chapter <= 1 ? "none" : "inline-flex";
-  }
-  if (nextBtn) {
-    nextBtn.style.display = chapter >= totalChapters ? "none" : "inline-flex";
-  }
+  // After loading, update the chapter buttons to reflect the next chapter's availability
+  await updateChapterButtons(currentChapter);
 }
 
 /* Download Chapter as PDF */
@@ -117,10 +141,14 @@ async function downloadChapterAsPDF() {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
+  // Retrieve the manga title element to generate the PDF filename
+  const mangaTitleElem = document.getElementById("manga-title");
+
+  // Loop through each loaded panel and add it to the PDF
   for (let i = 0; i < loadedPanels.length; i++) {
     const img = loadedPanels[i];
 
-    // Ensure the image is loaded before processing
+    // Wait until the image is fully loaded before processing
     await new Promise((resolve) => {
       if (img.complete) resolve();
       else img.onload = resolve;
@@ -131,8 +159,11 @@ async function downloadChapterAsPDF() {
     canvas.width = img.naturalWidth;
     canvas.height = img.naturalHeight;
     context.drawImage(img, 0, 0);
+
+    // Convert the canvas content to a JPEG data URL
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
 
+    // Calculate image dimensions while maintaining aspect ratio
     let imgWidth = pageWidth;
     let imgHeight = (canvas.height * pageWidth) / canvas.width;
     if (imgHeight > pageHeight) {
@@ -140,10 +171,14 @@ async function downloadChapterAsPDF() {
       imgWidth = (canvas.width * pageHeight) / canvas.height;
     }
     pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+
+    // Add a new page if this is not the last panel
     if (i < loadedPanels.length - 1) {
       pdf.addPage();
     }
   }
+
+  // Generate a slug for the PDF file name based on the manga title
   const mangaTitleSlug = mangaTitleElem
     ? mangaTitleElem.textContent.replace(/\s+/g, "-")
     : "Manga";
@@ -207,8 +242,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   if (nextBtn) {
-    nextBtn.addEventListener("click", () => {
-      if (currentChapter < totalChapters) {
+    nextBtn.addEventListener("click", async () => {
+      // Attempt to load the next chapter only if it exists
+      const exists = await checkChapterExists(currentChapter + 1);
+      if (exists) {
         loadChapter(currentChapter + 1);
       }
     });

@@ -227,6 +227,9 @@ header a:hover {
   padding: 10px;
   transform: translateY(100%);
   transition: transform 0.3s;
+  /* Ensure we don’t exceed the book height and cause overflow */
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .book:hover .info {
@@ -241,6 +244,15 @@ header a:hover {
 .book .info p {
   font-size: 0.9rem;
   color: #cfd8dc;
+  margin: 0;
+  /* Multi-line clamp approach */
+  display: -webkit-box;
+  -webkit-line-clamp: 6;         /* Adjust lines as you like */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.8em;
+  max-height: calc(1.8em * 6);   /* same as line-height * line-clamp */
 }
 
 @media screen and (max-width: 768px) {

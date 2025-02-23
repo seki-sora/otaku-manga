@@ -247,12 +247,12 @@ header a:hover {
   margin: 0;
   /* Multi-line clamp approach */
   display: -webkit-box;
-  -webkit-line-clamp: 6;         /* Adjust lines as you like */
+  -webkit-line-clamp: 8;         /* Adjust lines as you like */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.8em;
-  max-height: calc(1.8em * 6);   /* same as line-height * line-clamp */
+  max-height: calc(1.8em * 8);   /* same as line-height * line-clamp */
 }
 
 @media screen and (max-width: 768px) {

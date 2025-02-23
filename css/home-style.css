@@ -157,13 +157,13 @@ header a:hover {
 .hero {
   text-align: center;
   padding: 100px 20px;
-  background: url("../images/background.jpg") no-repeat center center/cover;
+  background: url("../images/megumin-pictures-g4ud4cghvn1m39bj.jpg") no-repeat center center/cover;
   color: white;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .hero h2 {
-  font-size: 3rem;
+  font-size: 2.8rem;
   margin-bottom: 20px;
   animation: fadeIn 1.5s ease-out;
 }

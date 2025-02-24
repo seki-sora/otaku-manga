@@ -3,58 +3,64 @@ let loadedPanels = [];
 let currentChapter = 1; // Starting chapter
 
 /* Helper Functions */
-// Generate a slug from the manga title (assumes #manga-title exists)
+// Generate a slug from the manga title (assumes an element with id "manga-title" exists)
 function getMangaSlug() {
   const titleElem = document.getElementById("manga-title");
   const title = titleElem ? titleElem.textContent : "";
+  // Use only the portion of the title before a comma, semicolon, or colon
   const limitedTitle = title.split(/[,;:]/)[0];
   return limitedTitle
     .toLowerCase()
+    .trim()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9\-]/g, "");
 }
 
-// Generate the base path for the current chapter
+// Construct the base path for a given chapter using the manga slug
 function getBasePath(chapter) {
   const slug = getMangaSlug();
   return `../manga/${slug}/chapter-${chapter}/`;
 }
 
 /* Theme Functions */
+// Apply the selected theme and persist the setting
 function applyTheme(theme) {
   document.body.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
 }
 
+// Toggle between dark and light themes
 function toggleTheme() {
   const currentTheme = document.body.getAttribute("data-theme");
   const newTheme = currentTheme === "dark" ? "light" : "dark";
   applyTheme(newTheme);
 }
 
-/* Check if a Chapter Exists by testing the first panel image */
+/* Chapter Existence Check */
+// Check if a chapter exists by testing if the first panel image loads
 async function checkChapterExists(chapterNumber) {
   const basePath = getBasePath(chapterNumber);
   const mangaSlug = getMangaSlug();
   const testImg = new Image();
-  testImg.src = `${basePath}${mangaSlug}-1.webp`; // testing first panel
+  testImg.src = `${basePath}${mangaSlug}-1.webp`;
   return new Promise((resolve) => {
     testImg.onload = () => resolve(true);
     testImg.onerror = () => resolve(false);
   });
 }
 
-/* Update Navigation Button Visibility Dynamically */
+/* Navigation Button Update */
+// Update the visibility of the previous and next chapter buttons
 async function updateChapterButtons(chapter) {
   const prevBtn = document.getElementById("prevChapterBtn");
   const nextBtn = document.getElementById("nextChapterBtn");
 
-  // Hide previous button on first chapter
+  // Hide the previous button on the first chapter
   if (prevBtn) {
     prevBtn.style.display = chapter <= 1 ? "none" : "inline-flex";
   }
 
-  // Check if the next chapter exists and update the button accordingly
+  // Check if the next chapter exists and update the next button accordingly
   if (nextBtn) {
     const exists = await checkChapterExists(chapter + 1);
     nextBtn.style.display = exists ? "inline-flex" : "none";
@@ -66,13 +72,13 @@ async function loadChapter(chapterNumber) {
   currentChapter = Number(chapterNumber);
   localStorage.setItem("lastChapter", currentChapter);
 
-  // Update chapter selection dropdown if present
+  // Update chapter selection dropdown if available
   const chapterSelect = document.getElementById("chapterSelect");
   if (chapterSelect) {
     chapterSelect.value = currentChapter;
   }
 
-  // Update navigation buttons
+  // Update navigation buttons for the current chapter
   await updateChapterButtons(currentChapter);
 
   const mangaSlug = getMangaSlug();
@@ -82,11 +88,12 @@ async function loadChapter(chapterNumber) {
   loadedPanels = [];
 
   let panelNumber = 1;
-  const batchSize = 5; // Adjust batch size per your network/server capabilities
+  const batchSize = 5; // Batch size can be adjusted based on network/server performance
 
-  // Load images in batches until one fails
   while (true) {
     const batchPromises = [];
+    
+    // Prepare a batch of image loading promises
     for (let i = 0; i < batchSize; i++) {
       const currentPanel = panelNumber + i;
       const img = new Image();
@@ -104,9 +111,12 @@ async function loadChapter(chapterNumber) {
       );
     }
 
+    // Await all images in the current batch
     const results = await Promise.all(batchPromises);
     let batchHasError = false;
-    for (let result of results) {
+
+    // Process each result in the batch
+    for (const result of results) {
       if (!result.success) {
         batchHasError = true;
         break;
@@ -115,31 +125,32 @@ async function loadChapter(chapterNumber) {
       loadedPanels.push(result.image);
       panelNumber++;
     }
+
+    // If any image in the batch failed to load, stop the loading process
     if (batchHasError) {
       if (loadedPanels.length === 0) {
-        chapterContentDiv.innerHTML =
-          "<p>No panels found for this chapter.</p>";
+        chapterContentDiv.innerHTML = "<p>No panels found for this chapter.</p>";
       }
       break;
     }
   }
 
-  // Refresh navigation buttons after chapter load
+  // Update navigation buttons after loading the chapter
   await updateChapterButtons(currentChapter);
 }
 
-/* Download Chapter as PDF by Guessing Image Sequence */
+/* Download Chapter as PDF */
+// Constructs a PDF URL based on a naming convention and triggers the download
 async function downloadChapterAsPDF() {
   const mangaSlug = getMangaSlug();
+  // Format the slug to have each word's first letter in uppercase
   const formattedSlug = mangaSlug
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join("-");
-
-  // Construct the URL based on your convention
   const pdfUrl = `../manga/${mangaSlug}/${formattedSlug}-Chapter-${currentChapter}.pdf`;
 
-  // Create a temporary link element to trigger the download
+  // Create a temporary link to initiate the PDF download
   const link = document.createElement("a");
   link.href = pdfUrl;
   link.download = `${formattedSlug}-Chapter-${currentChapter}.pdf`;
@@ -150,11 +161,11 @@ async function downloadChapterAsPDF() {
 
 /* Event Listeners Setup */
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize theme from saved setting
+  // Initialize theme based on saved settings or default to light
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
 
-  // Toggle theme button listener
+  // Setup theme toggle button, if available
   const toggleButton = document.getElementById("toggleButton");
   if (toggleButton) {
     toggleButton.classList.toggle("dark", savedTheme === "dark");
@@ -164,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Chapter selection dropdown listener
+  // Setup chapter selection dropdown listener, if available
   const chapterSelect = document.getElementById("chapterSelect");
   if (chapterSelect) {
     chapterSelect.addEventListener("change", function () {
@@ -172,25 +183,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Dropdown chapter links listener (for mobile or alternative navigation)
-  document
-    .querySelectorAll(".dropdown-content a[data-chapter]")
-    .forEach((link) => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const chapter = link.getAttribute("data-chapter");
-        loadChapter(chapter);
-        if (chapterSelect) chapterSelect.value = chapter;
-      });
+  // Setup dropdown chapter links for mobile or alternative navigation
+  document.querySelectorAll(".dropdown-content a[data-chapter]").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const chapter = link.getAttribute("data-chapter");
+      loadChapter(chapter);
+      if (chapterSelect) chapterSelect.value = chapter;
     });
+  });
 
-  // Download PDF button listener
+  // Setup PDF download button listener, if available
   const downloadBtn = document.getElementById("downloadPdfBtn");
   if (downloadBtn) {
     downloadBtn.addEventListener("click", downloadChapterAsPDF);
   }
 
-  // Navigation buttons listeners
+  // Setup previous and next chapter buttons listeners, if available
   const prevBtn = document.getElementById("prevChapterBtn");
   const nextBtn = document.getElementById("nextChapterBtn");
 
@@ -199,6 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentChapter > 1) loadChapter(currentChapter - 1);
     });
   }
+
   if (nextBtn) {
     nextBtn.addEventListener("click", async () => {
       if (await checkChapterExists(currentChapter + 1)) {
@@ -207,9 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load the last-read chapter (if available) or default chapter 1
+  // Load the last-read chapter from localStorage or default to chapter 1
   const savedChapter = localStorage.getItem("lastChapter");
-  loadChapter(
-    chapterSelect ? savedChapter || chapterSelect.value : savedChapter || 1
-  );
+  loadChapter(chapterSelect ? savedChapter || chapterSelect.value : savedChapter || 1);
 });

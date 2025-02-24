@@ -260,46 +260,6 @@ header a:hover {
   nav a.hide-mobile {
     display: none;
   }
-
-  /* Ensure the nav remains horizontal for remaining items */
-  nav {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Remove vertical display settings if they exist for nav items */
-  nav a {
-    display: inline-block;
-    text-align: center;
-    padding: 10px;
-  }
-
-  /* Keep the toggle container centered */
-  .toggle-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-  }
-
-  /* Hero section styles remain as needed */
-  .hero {
-    padding: 50px 20px;
-    text-align: center;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .hero h2 {
-    font-size: 2rem;
-  }
-
-  .hero p {
-    font-size: 1rem;
-    max-width: 90%;
-  }
 }
 
 footer {

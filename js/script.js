@@ -7,7 +7,8 @@ let currentChapter = 1; // Starting chapter
 function getMangaSlug() {
   const titleElem = document.getElementById("manga-title");
   const title = titleElem ? titleElem.textContent : "";
-  return title
+  const limitedTitle = title.split(/[,;:]/)[0];
+  return limitedTitle
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9\-]/g, "");
@@ -130,65 +131,21 @@ async function loadChapter(chapterNumber) {
 /* Download Chapter as PDF by Guessing Image Sequence */
 async function downloadChapterAsPDF() {
   const mangaSlug = getMangaSlug();
-  const basePath = getBasePath(currentChapter);
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: "a4" });
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-
-  let panelNumber = 1;
-  const foundImages = [];
-
-  // Load images sequentially until one fails
-  while (true) {
-    const imgSrc = `${basePath}${mangaSlug}-${panelNumber}.webp`;
-    const img = new Image();
-    img.src = imgSrc;
-
-    const exists = await new Promise((resolve) => {
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
-    });
-
-    if (!exists) break;
-    foundImages.push(img);
-    panelNumber++;
-  }
-
-  if (foundImages.length === 0) {
-    alert("No panels found for this chapter.");
-    return;
-  }
-
-  // Add each image as a page in the PDF
-  for (let i = 0; i < foundImages.length; i++) {
-    const img = foundImages[i];
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    ctx.drawImage(img, 0, 0);
-
-    const imgData = canvas.toDataURL("image/jpeg", 1.0);
-    let imgWidth = pageWidth;
-    let imgHeight = (canvas.height * pageWidth) / canvas.width;
-    if (imgHeight > pageHeight) {
-      imgHeight = pageHeight;
-      imgWidth = (canvas.width * pageHeight) / canvas.height;
-    }
-    pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-    if (i < foundImages.length - 1) {
-      pdf.addPage();
-    }
-  }
-
   const formattedSlug = mangaSlug
-  .split("-") // Split by hyphen
-  .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter
-  .join("-"); // Join without spaces
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("-");
 
-  pdf.save(`${formattedSlug}-Chapter-${currentChapter}.pdf`);
+  // Construct the URL based on your convention
+  const pdfUrl = `../manga/${mangaSlug}/${formattedSlug}-Chapter-${currentChapter}.pdf`;
+
+  // Create a temporary link element to trigger the download
+  const link = document.createElement("a");
+  link.href = pdfUrl;
+  link.download = `${formattedSlug}-Chapter-${currentChapter}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 /* Event Listeners Setup */

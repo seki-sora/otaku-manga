@@ -260,6 +260,23 @@ header a:hover {
   nav a.hide-mobile {
     display: none;
   }
+
+  /* Hero section styles remain as needed */
+  .hero {
+    padding: 50px 20px;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .hero h2 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+    max-width: 90%;
+  }
 }
 
 footer {

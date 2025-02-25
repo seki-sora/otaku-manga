@@ -3,7 +3,7 @@ let loadedPanels = [];
 let currentChapter = 1; // Starting chapter
 
 /* Helper Functions */
-// Generate a slug from the manga title (assumes an element with id "manga-title" exists)
+// Generate a slug from the manga title (assumes an element with id "manga-id" exists)
 function getMangaSlug() {
   const titleElem = document.getElementById("manga-id");
   const title = titleElem ? titleElem.textContent : "";
@@ -67,7 +67,8 @@ async function updateChapterButtons(chapter) {
 }
 
 /* Load Manga Chapter Panels with Batched Concurrent Loading */
-async function loadChapter(chapterNumber) {
+// Accepts an optional 'scroll' parameter (default false) to scroll if needed
+async function loadChapter(chapterNumber, scroll = false) {
   currentChapter = Number(chapterNumber);
   localStorage.setItem("lastChapter", currentChapter);
 
@@ -77,8 +78,13 @@ async function loadChapter(chapterNumber) {
     chapterSelect.value = currentChapter;
   }
 
-  // Scroll to the chapter selector smoothly
-  window.scrollTo({ top: document.getElementById("chapterSelect").offsetTop, behavior: "smooth" });
+  // Only scroll if the scroll flag is true
+  if (scroll) {
+    window.scrollTo({
+      top: document.getElementById("chapterSelect").offsetTop,
+      behavior: "smooth",
+    });
+  }
 
   // Update navigation buttons for the current chapter
   await updateChapterButtons(currentChapter);
@@ -90,7 +96,7 @@ async function loadChapter(chapterNumber) {
   loadedPanels = [];
 
   let panelNumber = 1;
-  const batchSize = 5; // Batch size can be adjusted based on network/server performance
+  const batchSize = 5; // Adjust batch size if needed
 
   while (true) {
     const batchPromises = [];
@@ -181,7 +187,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const chapterSelect = document.getElementById("chapterSelect");
   if (chapterSelect) {
     chapterSelect.addEventListener("change", function () {
-      loadChapter(this.value);
+      // When selecting from the dropdown in the header, enable scroll
+      loadChapter(this.value, true);
     });
   }
 
@@ -190,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
       const chapter = link.getAttribute("data-chapter");
-      loadChapter(chapter);
+      loadChapter(chapter, true); // enable scroll on click
       if (chapterSelect) chapterSelect.value = chapter;
     });
   });
@@ -207,14 +214,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (prevBtn) {
     prevBtn.addEventListener("click", () => {
-      if (currentChapter > 1) loadChapter(currentChapter - 1);
+      if (currentChapter > 1) loadChapter(currentChapter - 1, true); // scroll enabled
     });
   }
 
   if (nextBtn) {
     nextBtn.addEventListener("click", async () => {
       if (await checkChapterExists(currentChapter + 1)) {
-        loadChapter(currentChapter + 1);
+        loadChapter(currentChapter + 1, true); // scroll enabled
       }
     });
   }
@@ -222,4 +229,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // Load the last-read chapter from localStorage or default to chapter 1
   const savedChapter = localStorage.getItem("lastChapter");
   loadChapter(chapterSelect ? savedChapter || chapterSelect.value : savedChapter || 1);
+});
+
+/* Header Hide on Scroll */
+// Ensure your header element has the correct id in your HTML (e.g., id="site-header")
+let lastScrollY = window.scrollY;
+const header = document.getElementById("site-header");
+const scrollThreshold = 50; // Don't hide header until this scroll position
+
+window.addEventListener("scroll", () => {
+  const currentScrollY = window.scrollY;
+
+  // Only apply the effect if scrolled past threshold
+  if (currentScrollY > scrollThreshold) {
+    if (currentScrollY > lastScrollY) {
+      // Scrolling down: hide header
+      header.style.transform = "translateY(-100%)";
+    } else {
+      // Scrolling up: show header
+      header.style.transform = "translateY(0)";
+    }
+  } else {
+    // If we're above the threshold, ensure header is visible
+    header.style.transform = "translateY(0)";
+  }
+
+  lastScrollY = currentScrollY;
 });

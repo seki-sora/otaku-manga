@@ -370,6 +370,11 @@ nav a:hover {
   transform: translateY(0);
 }
 
+/* --- Hide the manga id ---*/
+#manga-id {
+  display: none;
+}
+
 footer {
   text-align: center;
   padding: 20px;

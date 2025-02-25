@@ -5,11 +5,10 @@ let currentChapter = 1; // Starting chapter
 /* Helper Functions */
 // Generate a slug from the manga title (assumes an element with id "manga-title" exists)
 function getMangaSlug() {
-  const titleElem = document.getElementById("manga-title");
+  const titleElem = document.getElementById("manga-id");
   const title = titleElem ? titleElem.textContent : "";
   // Use only the portion of the title before a comma, semicolon, or colon
-  const limitedTitle = title.split(/[,;:]/)[0];
-  return limitedTitle
+  return title
     .toLowerCase()
     .trim()
     .replace(/\s+/g, "-")
@@ -78,6 +77,9 @@ async function loadChapter(chapterNumber) {
     chapterSelect.value = currentChapter;
   }
 
+  // Scroll to the chapter selector smoothly
+  window.scrollTo({ top: document.getElementById("chapterSelect").offsetTop, behavior: "smooth" });
+
   // Update navigation buttons for the current chapter
   await updateChapterButtons(currentChapter);
 
@@ -92,7 +94,7 @@ async function loadChapter(chapterNumber) {
 
   while (true) {
     const batchPromises = [];
-    
+
     // Prepare a batch of image loading promises
     for (let i = 0; i < batchSize; i++) {
       const currentPanel = panelNumber + i;

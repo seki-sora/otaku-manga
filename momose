@@ -3,57 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Akira Momose First Love Is A Failure – Manga</title>
-    <meta name="description" content="Explore the manga 'Akira Momose First Love Is A Failure'. Read chapters and enjoy detailed visual storytelling with engaging romance, drama, and highschool life." />
-    <meta name="keywords" content="Akira Momose First Love Is A Failure, manga, chapters, visual storytelling, action, magic, reincarnation, isekai" />
+    <title>Akira Momose's First Love Is A Failure - Manga</title>
+    <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+    <meta
+      name="description"
+      content="Explore 'Akira Momose First Love' in manga format. Select chapters to view individual panels and immerse yourself in the story."
+    />
+    <meta
+      name="keywords"
+      content="Akira Momose First Love, manga, chapters, Sora, visual storytelling"
+    />
     <meta name="author" content="Harekawa Shinta" />
-    <link rel="canonical" href="https://www.otaku-manga.site/manga/akira-momose-first-love-is-a-failure" />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:title" content="Akira Momose First Love Is A Failure – Manga" />
-    <meta property="og:description" content="Read and explore 'Akira Momose First Love Is A Failure'. Select chapters and enjoy immersive storytelling." />
-    <meta property="og:url" content="https://www.otaku-manga.site/manga/akira-momose-first-love-is-a-failure" />
-    <meta property="og:type" content="article" />
-    <meta property="og:image" content="https://www.otaku-manga.site/images/akira-momose-first-love.jpg" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Akira Momose First Love Is A Failure – Manga" />
-    <meta name="twitter:description" content="Read and explore 'Akira Momose First Love Is A Failure'. Select chapters and enjoy immersive storytelling." />
-    <meta name="twitter:image" content="https://www.otaku-manga.site/images/akira-momose-first-love.jpg" />
-
-    <!-- JSON-LD Structured Data for Article -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "Akira Momose First Love Is A Failure",
-        "author": [
-          {
-            "@type": "Person",
-            "name": "Harekawa Shinta"
-          }
-        ],
-        "publisher": {
-          "@type": "Organization",
-          "name": "Otaku Manga",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://www.otaku-manga.site/images/favicon.ico"
-          }
-        },
-        "datePublished": "2025-01-01",
-        "description": "Explore the manga 'Akira Momose First Love Is A Failure'. Read chapters and enjoy detailed visual storytelling with themes of romance, drama, and highschool life.",
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": "https://www.otaku-manga.site/manga/akira-momose-first-love-is-a-failure"
-        }
-      }
-    </script>
-
-    <link rel="icon" href="../images/favicon.ico" type="image/x-icon" />
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../css/book-style.css" />
+    <!-- Include jsPDF library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </head>
   <body>

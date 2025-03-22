@@ -1,16 +1,33 @@
 import os
+import re
 
-def rename_images(folder_path):
-    num = 1
+def natural_keys(text):
+    """Split text into a list of strings and integers for natural sorting."""
+    return [int(chunk) if chunk.isdigit() else chunk for chunk in re.split(r'(\d+)', text)]
+
+def list_files(folder_path):
+    file_list = []
     for filename in os.listdir(folder_path):
-        if filename.lower().endswith(".webp"):
-            new_name = f"i-got-a-new-skill-every-time-i-was-exiled-{num}.webp"
-            old_path = os.path.join(folder_path, filename)
-            new_path = os.path.join(folder_path, new_name)
-            os.rename(old_path, new_path)
-            num += 1
-            print(f'Renamed: "{filename}" -> "{new_name}"')
+        if filename.endswith(".webp"):
+            file_list.append(os.path.join(folder_path, filename))
 
-# Change this to the path of your folder
-folder_path = "./i-got-a-new-skill-every-time-i-was-exiled/chapter-1"
-rename_images(folder_path)
+    # Sort files using natural sorting based on the basename
+    sorted_list = sorted(file_list, key=lambda x: natural_keys(os.path.basename(x)))
+    return sorted_list
+
+def rename_images(file_list, new_name):
+    num = 1
+    for filename in file_list:
+        new_name_mod = f"{new_name}-{num}.webp"
+        path = os.path.dirname(filename)  # use os.path.dirname for portability
+        new_path = os.path.join(path, new_name_mod)
+        os.rename(filename, new_path)
+        print(f'Renamed: "{filename}" -> "{new_name_mod}"')
+        num += 1
+
+if __name__ == "__main__":
+    folder_path = input("Enter folder path: ")
+    new_file_name = input("Enter desired filename: ")
+    file_list = list_files(folder_path)
+    print(file_list)
+    rename_images(file_list, new_file_name)

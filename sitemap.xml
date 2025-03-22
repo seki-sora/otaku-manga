@@ -28,5 +28,12 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Page 4 -->
+  <url>
+    <loc>https://otaku-manga.site/manga/toki-doki</loc>
+    <lastmod>2025-03-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <!-- Add more URLs for your manga chapters if needed -->
 </urlset>

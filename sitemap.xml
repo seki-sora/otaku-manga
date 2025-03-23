@@ -35,5 +35,12 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Page 5 -->
+  <url>
+    <loc>https://otaku-manga.site/manga/the-villainous-noble-loves-mom-heroines-too-much</loc>
+    <lastmod>2025-03-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <!-- Add more URLs for your manga chapters if needed -->
 </urlset>

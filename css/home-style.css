@@ -263,7 +263,7 @@ header a:hover {
 }
 
 /* Responsive Adjustments */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 600px) {
   nav a.hide-mobile {
     display: none;
   }

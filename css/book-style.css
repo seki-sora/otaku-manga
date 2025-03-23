@@ -401,7 +401,7 @@ footer p {
 }
 
 /* Mobile-friendly adjustments */
-@media (max-width: 600px) {
+@media screen and (max-width: 768px) {
   .book-header {
     flex-direction: column;
     align-items: center;

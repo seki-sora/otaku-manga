@@ -247,6 +247,7 @@ header a:hover {
   color: #cfd8dc;
   margin: 0;
   display: -webkit-box;
+  line-clamp: 8;
   -webkit-line-clamp: 8;
   -webkit-box-orient: vertical;
   overflow: hidden;

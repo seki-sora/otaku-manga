@@ -120,6 +120,17 @@ async function loadChapter(chapterNumber, scroll = false) {
       break;
     }
   }
+
+  // New Block: Append final image from root/images when all panels are loaded.
+  const finalImg = new Image();
+  // Adjust the image filename as needed.
+  finalImg.src = "../images/otaku-manga-ads.jpg";
+  finalImg.alt = "End of Chapter";
+  finalImg.style.width = "100%";
+  finalImg.style.display = "block";
+  finalImg.style.marginBottom = "20px";
+  chapterContentDiv.appendChild(finalImg);
+
   await updateChapterButtons(currentChapter);
 }
 

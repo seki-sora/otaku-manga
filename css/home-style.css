@@ -107,15 +107,14 @@ header {
 
 /* Increase the logo size and add spacing */
 .header-left img {
-  width: 55px; /* Adjust size as needed */
-  height: 55px;
+  width: 50px; /* Adjust size as needed */
+  height: 50px;
   margin-right: 10px;
 }
 
 /* Style the title link */
 .title {
   text-decoration: none;
-  font-size: 1.15rem;
   color: var(--text-color);
 }
 
@@ -131,7 +130,7 @@ nav a {
   margin: 0 10px;
   color: var(--link-color);
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   transition: color 0.3s;
 }
 
@@ -150,8 +149,8 @@ header a:hover {
 }
 
 .toggle {
-  width: 60px;
-  height: 30px;
+  width: 50px;
+  height: 25px;
   background-color: #afafaf;
   border-radius: 25px;
   position: relative;
@@ -161,10 +160,10 @@ header a:hover {
 
 .toggle-icon {
   position: absolute;
-  top: 3px;
-  left: 5px;
-  width: 24px;
-  height: 24px;
+  top: 2.5px;
+  left: 3.5px;
+  width: 20px;
+  height: 20px;
   background: url('../images/sun.png') no-repeat center center;
   background-size: contain;
   transition: transform 0.3s ease, background 0.3s ease;
@@ -176,13 +175,13 @@ header a:hover {
 }
 
 .toggle.dark .toggle-icon {
-  transform: translateX(27px);
+  transform: translateX(24px);
   background: url('../images/moon.png') no-repeat center center;
   background-size: contain;
-  -webkit-transform: translateX(27px);
-  -moz-transform: translateX(27px);
-  -ms-transform: translateX(27px);
-  -o-transform: translateX(27px);
+  -webkit-transform: translateX(24px);
+  -moz-transform: translateX(24px);
+  -ms-transform: translateX(24px);
+  -o-transform: translateX(24px);
 }
 
 /* Hero Section */

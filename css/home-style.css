@@ -72,6 +72,7 @@ body {
 
 /* Header */
 header {
+  max-height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -106,14 +107,15 @@ header {
 
 /* Increase the logo size and add spacing */
 .header-left img {
-  width: 50px; /* Adjust size as needed */
-  height: 50px;
+  width: 55px; /* Adjust size as needed */
+  height: 55px;
   margin-right: 10px;
 }
 
 /* Style the title link */
 .title {
   text-decoration: none;
+  font-size: 1.15rem;
   color: var(--text-color);
 }
 
@@ -129,6 +131,7 @@ nav a {
   margin: 0 10px;
   color: var(--link-color);
   font-weight: 700;
+  font-size: 1.2rem;
   transition: color 0.3s;
 }
 
@@ -147,39 +150,46 @@ header a:hover {
 }
 
 .toggle {
-  width: 50px;
-  height: 25px;
-  background-color: #ccc;
+  width: 60px;
+  height: 30px;
+  background-color: #afafaf;
   border-radius: 25px;
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-.toggle::before {
-  content: "";
+.toggle-icon {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: white;
-  border-radius: 50%;
-  top: 2.5px;
-  left: 2.5px;
-  transition: transform 0.3s;
+  top: 3px;
+  left: 5px;
+  width: 24px;
+  height: 24px;
+  background: url('../images/sun.png') no-repeat center center;
+  background-size: contain;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
+/* When dark mode is active on toggle */
 .toggle.dark {
   background-color: #4a4a4a;
 }
 
-.toggle.dark::before {
-  transform: translateX(25px);
+.toggle.dark .toggle-icon {
+  transform: translateX(27px);
+  background: url('../images/moon.png') no-repeat center center;
+  background-size: contain;
+  -webkit-transform: translateX(27px);
+  -moz-transform: translateX(27px);
+  -ms-transform: translateX(27px);
+  -o-transform: translateX(27px);
 }
 
 /* Hero Section */
 .hero {
   text-align: center;
   padding: 100px 20px;
+  min-height: 225px;
   background: url("../images/megumin-light.png") no-repeat center center/cover;
   color: white;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
@@ -285,7 +295,7 @@ header a:hover {
 }
 
 /* Responsive Adjustments */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 680px) {
   nav a.hide-mobile {
     display: none;
   }

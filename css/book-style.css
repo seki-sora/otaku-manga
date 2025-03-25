@@ -217,6 +217,11 @@ nav a:hover {
   margin-bottom: 20px;
 }
 
+.book-header.stretched {
+  flex-direction: column;
+  align-items: center;
+}
+
 .book-header img {
   max-width: 200px;
   height: auto;
@@ -400,25 +405,4 @@ footer p {
   font-size: 0.9rem;
 }
 
-/* Mobile-friendly adjustments */
-@media screen and (max-width: 600px) {
-  .book-header {
-    flex-direction: column;
-    align-items: center;
-  }
 
-  .book-header img {
-    max-width: 80%;
-    height: auto;
-  }
-
-  .book-header .info {
-    text-align: center;
-  }
-
-  .book-header .info h2 {
-    /* Ensure normal word wrapping */
-    word-break: normal;
-    white-space: normal;
-  }
-}

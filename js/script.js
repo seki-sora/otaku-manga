@@ -92,8 +92,8 @@ async function loadChapter(chapterNumber, scroll = false) {
       img.src = `${basePath}${mangaSlug}-${currentPanel}.webp`;
       img.alt = `Panel ${currentPanel}`;
       img.style.width = "100%";
+      img.style.paddingBottom = "1px";
       img.style.display = "block";
-      img.style.marginBottom = "20px";
       batchPromises.push(
         new Promise((resolve) => {
           img.onload = () => resolve({ success: true, image: img });
@@ -202,6 +202,40 @@ function updatePlaceholder(visibleCount) {
     }
   }
 }
+
+function updateLayout() {
+  const bookHeader = document.querySelector('.book-header');
+  const img = bookHeader.querySelector('img');
+
+  if (!img.complete) {
+    img.onload = updateLayout;
+    return;
+  }
+
+  // Get the effective (visible) dimensions of the image.
+  const rect = img.getBoundingClientRect();
+  console.log("Width: ", rect.width, ", Height: ", rect.height);
+  const effectiveAspectRatio = rect.width / rect.height;
+
+  // Define a threshold or target ratio to decide when to apply a layout change.
+  const targetAspectRatio = 0.5; // for example
+
+  console.log("Effective:", effectiveAspectRatio, ", Target Ratio: ", targetAspectRatio)
+
+  if (effectiveAspectRatio < targetAspectRatio) {
+    bookHeader.classList.add('stretched');
+  } else {
+    bookHeader.classList.remove('stretched');
+  }
+}
+
+// Run on page load and resize
+window.addEventListener('load', updateLayout);
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(updateLayout, 50); // adjust delay as needed
+});
 
 /* Event Listeners Setup */
 document.addEventListener("DOMContentLoaded", () => {

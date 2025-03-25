@@ -72,6 +72,9 @@ body {
 
 /* Header */
 header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: sticky;
   top: 0;
   background-color: var(--header-bg);
@@ -81,18 +84,37 @@ header {
   transition: transform 0.3s ease-in-out;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 1.8rem;
-  display: inline;
+/* Header styling */
+#site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: var(--header-bg);
+  padding: 0px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
 }
 
-header img {
-  padding: 0 5px;
-  margin: 0;
-  width: 30px;
-  height: 30px;
-  display: inline;
+/* Group the logo and title */
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Increase the logo size and add spacing */
+.header-left img {
+  width: 50px; /* Adjust size as needed */
+  height: 50px;
+  margin-right: 10px;
+}
+
+/* Style the title link */
+.title {
+  text-decoration: none;
+  color: var(--text-color);
 }
 
 nav {

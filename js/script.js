@@ -214,13 +214,10 @@ function updateLayout() {
 
   // Get the effective (visible) dimensions of the image.
   const rect = img.getBoundingClientRect();
-  console.log("Width: ", rect.width, ", Height: ", rect.height);
   const effectiveAspectRatio = rect.width / rect.height;
 
   // Define a threshold or target ratio to decide when to apply a layout change.
   const targetAspectRatio = 0.5; // for example
-
-  console.log("Effective:", effectiveAspectRatio, ", Target Ratio: ", targetAspectRatio)
 
   if (effectiveAspectRatio < targetAspectRatio) {
     bookHeader.classList.add('stretched');
@@ -234,7 +231,7 @@ window.addEventListener('load', updateLayout);
 let resizeTimeout;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(updateLayout, 50); // adjust delay as needed
+  resizeTimeout = setTimeout(updateLayout, 100); // adjust delay as needed
 });
 
 /* Event Listeners Setup */

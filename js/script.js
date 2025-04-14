@@ -4,17 +4,11 @@
    Global Variables and Initial Setup
    ================================================ */
 let loadedPanels = [];
-let currentChapter = 1; // Starting chapter
+let currentChapter = 1;
 
 /* ================================================
    Helper Functions
    ================================================ */
-
-/**
- * Returns a URL-friendly slug generated from the manga title.
- * Assumes an element with id "manga-id" exists.
- * @returns {string} The manga slug.
- */
 const getMangaSlug = () => {
   const titleElem = document.getElementById("manga-id");
   const title = titleElem ? titleElem.textContent : "";
@@ -25,39 +19,22 @@ const getMangaSlug = () => {
     .replace(/[^a-z0-9\-]/g, "");
 };
 
-/**
- * Constructs the base path for a given chapter using the manga slug.
- * @param {number|string} chapter - The chapter number.
- * @returns {string} The base path URL.
- */
 const getBasePath = (chapter) => {
   const slug = getMangaSlug();
   return `../manga/${slug}/chapter-${chapter}/`;
 };
 
-/**
- * Loads an image with a fallback to .jpg if the .webp fails.
- * @param {string} webpSrc - The source URL for the .webp image.
- * @param {string} jpgSrc - The fallback source URL for the .jpg image.
- * @param {string} altText - The alt text for the image.
- * @param {object} [styles={}] - Optional styles to apply.
- * @returns {Promise} Resolves with an object indicating success and the image element.
- */
 const loadImageWithFallback = (webpSrc, jpgSrc, altText, styles = {}) =>
   new Promise((resolve) => {
     const img = new Image();
     img.src = webpSrc;
     img.alt = altText;
-    // Apply default styles
     img.style.width = "100%";
     img.style.display = "block";
-    // Apply any additional styles passed in
     Object.assign(img.style, styles);
 
-    // When image loads successfully, resolve with success.
     img.onload = () => resolve({ success: true, image: img });
 
-    // On error, if not yet tried the fallback, set src to the jpg version.
     img.onerror = () => {
       if (!img.dataset.fallback) {
         img.dataset.fallback = "true";
@@ -71,19 +48,11 @@ const loadImageWithFallback = (webpSrc, jpgSrc, altText, styles = {}) =>
 /* ================================================
    Theme Functions
    ================================================ */
-
-/**
- * Applies the given theme by setting a data attribute on the body and saving it to localStorage.
- * @param {string} theme - The theme to apply ("light" or "dark").
- */
 const applyTheme = (theme) => {
   document.body.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
 };
 
-/**
- * Toggles the theme between "light" and "dark".
- */
 const toggleTheme = () => {
   const currentTheme = document.body.getAttribute("data-theme");
   const newTheme = currentTheme === "dark" ? "light" : "dark";
@@ -93,30 +62,18 @@ const toggleTheme = () => {
 /* ================================================
    Chapter Existence Check
    ================================================ */
-
-/**
- * Checks if a chapter exists by attempting to load the first panel image.
- * If .webp is not found, it falls back to .jpg.
- * @param {number} chapterNumber - The chapter number to check.
- * @returns {Promise<boolean>} Resolves to true if the chapter exists, false otherwise.
- */
 const checkChapterExists = async (chapterNumber) => {
   const basePath = getBasePath(chapterNumber);
-  const mangaSlug = getMangaSlug();
-  const webpSrc = `${basePath}${mangaSlug}-1.webp`;
-  const jpgSrc = `${basePath}${mangaSlug}-1.jpg`;
-  const result = await loadImageWithFallback(webpSrc, jpgSrc, "Chapter Existence Check");
+  const slug = getMangaSlug();
+  const webpSrc = `${basePath}${slug}-1.webp`;
+  const jpgSrc = `${basePath}${slug}-1.jpg`;
+  const result = await loadImageWithFallback(webpSrc, jpgSrc, "Chapter Check");
   return result.success;
 };
 
 /* ================================================
-   Navigation Button Update
+   Update Prev/Next Buttons
    ================================================ */
-
-/**
- * Updates the display of the previous and next chapter buttons.
- * @param {number} chapter - The current chapter number.
- */
 const updateChapterButtons = async (chapter) => {
   const prevBtn = document.getElementById("prevChapterBtn");
   const nextBtn = document.getElementById("nextChapterBtn");
@@ -124,6 +81,7 @@ const updateChapterButtons = async (chapter) => {
   if (prevBtn) {
     prevBtn.style.display = chapter <= 1 ? "none" : "inline-flex";
   }
+
   if (nextBtn) {
     const exists = await checkChapterExists(chapter + 1);
     nextBtn.style.display = exists ? "inline-flex" : "none";
@@ -131,21 +89,12 @@ const updateChapterButtons = async (chapter) => {
 };
 
 /* ================================================
-   Load Manga Chapter Panels with Batched Concurrent Loading
+   Load Manga Chapter Panels
    ================================================ */
-
-/**
- * Loads all the panels for a given chapter.
- * Attempts to load panels in batches and stops when a panel cannot be loaded.
- * Fallback is provided from .webp to .jpg for each panel.
- * @param {number|string} chapterNumber - The chapter number to load.
- * @param {boolean} [scroll=false] - Whether to scroll to the chapter selection element.
- */
 const loadChapter = async (chapterNumber, scroll = false) => {
   currentChapter = Number(chapterNumber);
   localStorage.setItem("lastChapter", currentChapter);
 
-  // Update chapter select dropdown if it exists
   const chapterSelect = document.getElementById("chapterSelect");
   if (chapterSelect) {
     chapterSelect.value = currentChapter;
@@ -154,16 +103,13 @@ const loadChapter = async (chapterNumber, scroll = false) => {
   if (scroll) {
     const selectElem = document.getElementById("chapterSelect");
     if (selectElem) {
-      window.scrollTo({
-        top: selectElem.offsetTop,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: selectElem.offsetTop, behavior: "smooth" });
     }
   }
 
   await updateChapterButtons(currentChapter);
 
-  const mangaSlug = getMangaSlug();
+  const slug = getMangaSlug();
   const basePath = getBasePath(currentChapter);
   const chapterContentDiv = document.getElementById("chapter-content");
   chapterContentDiv.innerHTML = "";
@@ -174,21 +120,18 @@ const loadChapter = async (chapterNumber, scroll = false) => {
   let batchHasError = false;
 
   while (true) {
-    const batchPromises = [];
+    const batch = [];
     for (let i = 0; i < batchSize; i++) {
-      const currentPanel = panelNumber + i;
-      const webpSrc = `${basePath}${mangaSlug}-${currentPanel}.webp`;
-      const jpgSrc = `${basePath}${mangaSlug}-${currentPanel}.jpg`;
-      batchPromises.push(
-        loadImageWithFallback(webpSrc, jpgSrc, `Panel ${currentPanel}`, {
-          paddingBottom: "1px",
-        })
+      const num = panelNumber + i;
+      const webpSrc = `${basePath}${slug}-${num}.webp`;
+      const jpgSrc = `${basePath}${slug}-${num}.jpg`;
+      batch.push(
+        loadImageWithFallback(webpSrc, jpgSrc, `Panel ${num}`, { paddingBottom: "1px" })
       );
     }
 
-    const results = await Promise.all(batchPromises);
+    const results = await Promise.all(batch);
 
-    // Check if any image in the batch failed to load.
     for (const result of results) {
       if (!result.success) {
         batchHasError = true;
@@ -207,7 +150,6 @@ const loadChapter = async (chapterNumber, scroll = false) => {
     }
   }
 
-  // Append the final static image (e.g., an advertisement or end-of-chapter image)
   const finalImg = new Image();
   finalImg.src = "../images/otaku-manga-ads.jpg";
   finalImg.alt = "End of Chapter";
@@ -222,20 +164,16 @@ const loadChapter = async (chapterNumber, scroll = false) => {
 /* ================================================
    Download Chapter as PDF
    ================================================ */
-
-/**
- * Initiates the download of the current chapter as a PDF.
- */
 const downloadChapterAsPDF = async () => {
-  const mangaSlug = getMangaSlug();
-  // Format slug for display (capitalize first letter of each word)
-  const formattedSlug = mangaSlug
+  const slug = getMangaSlug();
+  const formattedSlug = slug
     .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join("-");
-  const pdfUrl = `../manga/${mangaSlug}/${formattedSlug}-Chapter-${currentChapter}.pdf`;
+  const url = `../manga/${slug}/${formattedSlug}-Chapter-${currentChapter}.pdf`;
+
   const link = document.createElement("a");
-  link.href = pdfUrl;
+  link.href = url;
   link.download = `${formattedSlug}-Chapter-${currentChapter}.pdf`;
   document.body.appendChild(link);
   link.click();
@@ -243,12 +181,8 @@ const downloadChapterAsPDF = async () => {
 };
 
 /* ================================================
-   Search Functionality for Manga Titles
+   Search Setup
    ================================================ */
-
-/**
- * Sets up the search functionality to filter manga titles.
- */
 const setupSearch = () => {
   const searchBar = document.getElementById("searchBar");
   if (!searchBar) return;
@@ -259,7 +193,6 @@ const setupSearch = () => {
     let visibleCount = 0;
 
     books.forEach((book) => {
-      // Skip the placeholder card during filtering.
       if (book.id === "noResultsPlaceholder") return;
       const titleElem = book.querySelector(".info h3");
       if (!titleElem) return;
@@ -276,10 +209,6 @@ const setupSearch = () => {
   });
 };
 
-/**
- * Updates the manga display with a placeholder if no manga cards match the search.
- * @param {number} visibleCount - The number of visible manga cards.
- */
 const updatePlaceholder = (visibleCount) => {
   const mangaSection = document.getElementById("manga");
   let placeholder = document.getElementById("noResultsPlaceholder");
@@ -294,24 +223,17 @@ const updatePlaceholder = (visibleCount) => {
         <div class="info">
           <h3>Manga ရှာမတွေ့ပါ</h3>
           <p>နောက်မှပြန်လာခဲ့ပါ 😔</p>
-        </div>
-      `;
+        </div>`;
       mangaSection.appendChild(placeholder);
     }
-  } else {
-    if (placeholder) {
-      placeholder.remove();
-    }
+  } else if (placeholder) {
+    placeholder.remove();
   }
 };
 
 /* ================================================
-   Responsive Layout Update for Book Header
+   Responsive Book Header Layout
    ================================================ */
-
-/**
- * Adjusts the layout of the book header based on the effective aspect ratio of its image.
- */
 const updateLayout = () => {
   const bookHeader = document.querySelector(".book-header");
   if (!bookHeader) return;
@@ -325,9 +247,9 @@ const updateLayout = () => {
 
   const rect = img.getBoundingClientRect();
   const effectiveAspectRatio = rect.width / rect.height;
-  const targetAspectRatio = 0.5; // Example threshold
+  const threshold = 0.5;
 
-  if (effectiveAspectRatio < targetAspectRatio) {
+  if (effectiveAspectRatio < threshold) {
     bookHeader.classList.add("stretched");
   } else {
     bookHeader.classList.remove("stretched");
@@ -335,14 +257,12 @@ const updateLayout = () => {
 };
 
 /* ================================================
-   Event Listeners Setup on DOMContentLoaded
+   DOMContentLoaded Setup
    ================================================ */
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize theme
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
 
-  // Setup theme toggle button
   const toggleButton = document.getElementById("toggleButton");
   if (toggleButton) {
     toggleButton.classList.toggle("dark", savedTheme === "dark");
@@ -352,15 +272,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Chapter selection dropdown listener
   const chapterSelect = document.getElementById("chapterSelect");
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlChapter = urlParams.get("chapter");
+  const savedChapter = localStorage.getItem("lastChapter");
+
+  if (urlChapter) {
+    currentChapter = parseInt(urlChapter, 10);
+    localStorage.setItem("lastChapter", currentChapter);
+  } else if (savedChapter) {
+    currentChapter = parseInt(savedChapter, 10);
+  } else if (chapterSelect) {
+    currentChapter = parseInt(chapterSelect.value, 10);
+  }
+
+  loadChapter(currentChapter);
+
   if (chapterSelect) {
     chapterSelect.addEventListener("change", function () {
       loadChapter(this.value, true);
     });
   }
 
-  // Mobile chapter links listener
   document.querySelectorAll(".dropdown-content a[data-chapter]").forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
@@ -370,22 +303,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // PDF download button listener
   const downloadBtn = document.getElementById("downloadPdfBtn");
   if (downloadBtn) {
     downloadBtn.addEventListener("click", downloadChapterAsPDF);
   }
 
-  // Previous and Next chapter buttons listeners
   const prevBtn = document.getElementById("prevChapterBtn");
-  const nextBtn = document.getElementById("nextChapterBtn");
-
   if (prevBtn) {
     prevBtn.addEventListener("click", () => {
       if (currentChapter > 1) loadChapter(currentChapter - 1, true);
     });
   }
 
+  const nextBtn = document.getElementById("nextChapterBtn");
   if (nextBtn) {
     nextBtn.addEventListener("click", async () => {
       if (await checkChapterExists(currentChapter + 1)) {
@@ -394,15 +324,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load the last visited chapter or default to the first one.
-  const savedChapter = localStorage.getItem("lastChapter");
-  loadChapter(chapterSelect ? savedChapter || chapterSelect.value : savedChapter || 1);
-
-  // Initialize search functionality
   setupSearch();
-
-  // Update layout on load and on resize
   updateLayout();
+
   let resizeTimeout;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
@@ -418,11 +342,11 @@ const header = document.getElementById("site-header");
 const scrollThreshold = 100;
 
 window.addEventListener("scroll", () => {
-  const currentScrollY = window.scrollY;
-  if (currentScrollY > scrollThreshold) {
-    header.style.transform = currentScrollY > lastScrollY ? "translateY(-100%)" : "translateY(0)";
+  const currentY = window.scrollY;
+  if (currentY > scrollThreshold) {
+    header.style.transform = currentY > lastScrollY ? "translateY(-100%)" : "translateY(0)";
   } else {
     header.style.transform = "translateY(0)";
   }
-  lastScrollY = currentScrollY;
+  lastScrollY = currentY;
 });

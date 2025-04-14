@@ -8,7 +8,7 @@ def natural_keys(text):
 def list_files(folder_path):
     file_list = []
     for filename in os.listdir(folder_path):
-        if filename.endswith(".webp"):
+        if filename.endswith(".jpg"):
             file_list.append(os.path.join(folder_path, filename))
 
     # Sort files using natural sorting based on the basename
@@ -18,7 +18,7 @@ def list_files(folder_path):
 def rename_images(file_list, new_name):
     num = 1
     for filename in file_list:
-        new_name_mod = f"{new_name}-{num}.webp"
+        new_name_mod = f"{new_name}-{num}.jpg"
         path = os.path.dirname(filename)  # use os.path.dirname for portability
         new_path = os.path.join(path, new_name_mod)
         os.rename(filename, new_path)

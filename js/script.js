@@ -276,6 +276,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const urlChapter = urlParams.get("chapter");
   const savedChapter = localStorage.getItem("lastChapter");
+  if (!isNaN(savedChapter)) {
+    currentChapter = parseInt(savedChapter, 10);
+  } else {
+    currentChapter = 1; // or fallback to chapterSelect
+  }
 
   if (urlChapter) {
     currentChapter = parseInt(urlChapter, 10);

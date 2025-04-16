@@ -281,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (urlChapter) {
     currentChapter = parseInt(urlChapter, 10);
-    localStorage.setItem("lastChapter", currentChapter);
+    localStorage.setItem(getStorageKey(), currentChapter);
   } else if (savedChapter) {
     currentChapter = parseInt(savedChapter, 10);
   } else if (chapterSelect) {

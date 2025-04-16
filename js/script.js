@@ -88,12 +88,14 @@ const updateChapterButtons = async (chapter) => {
   }
 };
 
+const getStorageKey = () => `lastChapter-${getMangaSlug()}`;
+
 /* ================================================
    Load Manga Chapter Panels
    ================================================ */
 const loadChapter = async (chapterNumber, scroll = false) => {
   currentChapter = Number(chapterNumber);
-  localStorage.setItem("lastChapter", currentChapter);
+  localStorage.setItem(getStorageKey(), currentChapter);
 
   const chapterSelect = document.getElementById("chapterSelect");
   if (chapterSelect) {
@@ -275,12 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chapterSelect = document.getElementById("chapterSelect");
   const urlParams = new URLSearchParams(window.location.search);
   const urlChapter = urlParams.get("chapter");
-  const savedChapter = localStorage.getItem("lastChapter");
-  if (!isNaN(savedChapter)) {
-    currentChapter = parseInt(savedChapter, 10);
-  } else {
-    currentChapter = 1; // or fallback to chapterSelect
-  }
+  const savedChapter = localStorage.getItem(getStorageKey());
 
   if (urlChapter) {
     currentChapter = parseInt(urlChapter, 10);

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
+  <url>
+    <loc>https://otaku-manga.site/</loc>
+    <lastmod>2025-02-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Page 1 -->
+  <url>
+    <loc>https://otaku-manga.site/manga/akira-momose-first-love-is-a-failure</loc>
+    <lastmod>2025-02-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Page 2 -->
+  <url>
+    <loc>https://otaku-manga.site/manga/i-got-a-new-skill-every-time-i-was-exiled</loc>
+    <lastmod>2025-02-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Page 3 -->
+  <url>
+    <loc>https://otaku-manga.site/manga/the-quintessential-quintuplets</loc>
+    <lastmod>2025-02-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Page 4 -->
+  <url>
+    <loc>https://otaku-manga.site/manga/toki-doki</loc>
+    <lastmod>2025-03-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Page 5 -->
+  <url>
+    <loc>https://otaku-manga.site/manga/the-villainous-noble-loves-mom-heroines-too-much</loc>
+    <lastmod>2025-03-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Page 6 -->
+  <url>
+    <loc>https://otaku-manga.site/manga/solo-leveling</loc>
+    <lastmod>2025-04-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Add more URLs for your manga chapters if needed -->
+</urlset>

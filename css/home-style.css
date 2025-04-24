@@ -1,0 +1,359 @@
+:root {
+  --bg-color: #f3e7e9;
+  --text-color: #3a3a3a;
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --scroll-bar: #b8b8b8;
+  --scroll-bar-hovered: #888;
+  --link-color: #666;
+  --link-hover: #222;
+  --book-cover: rgba(0, 0, 0, 0.8);
+  --footer-bg: #f8f9fa;
+}
+
+[data-theme="dark"] {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --header-bg: rgba(18, 18, 18, 0.9);
+  --scroll-bar: #555;
+  --scroll-bar-hovered: #333;
+  --link-color: #bbbbbb;
+  --link-hover: #808080;
+  --book-cover: rgba(0, 0, 0, 0.8);
+  --footer-bg: #1e1e1e;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-bar);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-bar-hovered);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Scrollbar Buttons */
+::-webkit-scrollbar-button {
+  height: 16px;
+  border: none;
+}
+
+::-webkit-scrollbar-button:single-button:decrement {
+  background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M12 8l6 6H6z"/></svg>')
+    no-repeat center;
+  background-size: 16px;
+}
+
+::-webkit-scrollbar-button:single-button:increment {
+  background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M12 16l6-6H6z"/></svg>')
+    no-repeat center;
+  background-size: 16px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Merriweather", serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow-x: hidden;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Header */
+header {
+  max-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: var(--header-bg);
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Header styling */
+#site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: var(--header-bg);
+  padding: 0px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Group the logo and title */
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Increase the logo size and add spacing */
+.header-left img {
+  width: 50px; /* Adjust size as needed */
+  height: 50px;
+  margin-right: 10px;
+}
+
+/* Style the title link */
+.title {
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+nav {
+  float: right;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+nav a {
+  text-decoration: none;
+  margin: 0 10px;
+  color: var(--link-color);
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: color 0.3s;
+}
+
+header a:hover {
+  color: var(--link-hover);
+}
+
+.title {
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+.toggle-container {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+.toggle {
+  width: 50px;
+  height: 25px;
+  background-color: #afafaf;
+  border-radius: 25px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle-icon {
+  position: absolute;
+  top: 2.5px;
+  left: 3.5px;
+  width: 20px;
+  height: 20px;
+  background: url('../images/sun.png') no-repeat center center;
+  background-size: contain;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+/* When dark mode is active on toggle */
+.toggle.dark {
+  background-color: #4a4a4a;
+}
+
+.toggle.dark .toggle-icon {
+  transform: translateX(24px);
+  background: url('../images/moon.png') no-repeat center center;
+  background-size: contain;
+  -webkit-transform: translateX(24px);
+  -moz-transform: translateX(24px);
+  -ms-transform: translateX(24px);
+  -o-transform: translateX(24px);
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 100px 20px;
+  min-height: 225px;
+  background: url("../images/megumin-light.png") no-repeat center center/cover;
+  color: white;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.hero h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  animation: fadeIn 1.5s ease-out;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  animation: fadeIn 2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Book Section & Manga Cards */
+.book-section {
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.book {
+  display: inline-block;
+  margin: 20px;
+  text-align: left;
+  width: 200px;
+  height: 350px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+  position: relative;
+}
+
+.book:hover {
+  transform: translateY(-10px);
+}
+
+.book img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 5px;
+}
+
+.book .info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--book-cover);
+  color: #e0e0e0;
+  text-align: center;
+  padding: 10px;
+  transform: translateY(100%);
+  transition: transform 0.3s;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.book:hover .info {
+  transform: translateY(0);
+}
+
+.book .info h3 {
+  margin: 10px 0 5px;
+  font-size: 1.2rem;
+}
+
+.book .info p {
+  font-size: 0.9rem;
+  color: #cfd8dc;
+  margin: 0;
+  display: -webkit-box;
+  line-clamp: 8;
+  -webkit-line-clamp: 8;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.8em;
+  max-height: calc(1.8em * 8);
+}
+
+/* Placeholder Card Styling */
+.book.placeholder {
+  opacity: 0.8;
+  border: 2px dashed var(--link-hover);
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 680px) {
+  nav a.hide-mobile {
+    display: none;
+  }
+  .hero {
+    padding: 50px 20px;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+  }
+  .hero h2 {
+    font-size: 2rem;
+  }
+  .hero p {
+    font-size: 1rem;
+    max-width: 90%;
+  }
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: var(--footer-bg);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* New Search Bar Styles placed inside the manga section */
+.search-container {
+  margin: 20px auto;
+  text-align: center;
+  max-width: 320px;
+}
+
+#searchBar {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid var(--text-color);
+  border-radius: 25px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#searchBar:focus {
+  border-color: var(--link-hover);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] #searchBar {
+  background-color: #333;
+  color: #fff;
+  border-color: #bbb;
+}
+
+[data-theme="dark"] #searchBar:focus {
+  border-color: #fff;
+}

@@ -1,0 +1,386 @@
+:root {
+  --bg-color: #f3e7e9;
+  --text-color: #333;
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --content-bg: #f8f9fa;
+  --scroll-bar: #b8b8b8;
+  --scroll-bar-hovered: #888;
+  --link-color: #666;
+  --link-hover: #222;
+  --border-color: #a090b6; /* Neutral color that works in both themes */
+  --hover-border-color: #8c79a7;
+  --button-bg: #b197fc;
+  --button-text: #110d1a;
+  --home-light: url("../images/home-light.png");
+  --home-dark: url("../images/home-dark.png");
+}
+
+[data-theme="dark"] {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --header-bg: rgba(18, 18, 18, 0.9);
+  --content-bg: #1e1e1e;
+  --scroll-bar: #555;
+  --scroll-bar-hovered: #333;
+  --link-color: #bbbbbb;
+  --link-hover: #808080;
+  --border-color: #666; /* Softer gray for dark mode */
+  --hover-border-color: #888;
+  --button-bg: #6a5acd;
+  --button-text: #ffffff;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 16px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-bar); /* Color of the scroll thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-bar-hovered); /* Hover color for the thumb */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Background of the scrollbar track */
+}
+
+/* Scrollbar Buttons */
+::-webkit-scrollbar-button {
+  height: 16px; /* Set height of the buttons */
+  border: none; /* No borders for buttons */
+}
+
+/* Up Arrow */
+::-webkit-scrollbar-button:single-button:decrement {
+  background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M12 8l6 6H6z"/></svg>')
+    no-repeat center;
+  background-size: 16px;
+}
+
+/* Down Arrow */
+::-webkit-scrollbar-button:single-button:increment {
+  background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M12 16l6-6H6z"/></svg>')
+    no-repeat center;
+  background-size: 16px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Merriweather", serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: var(--header-bg);
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+header img {
+  margin: 0;
+  width: 30px;
+  height: 30px;
+  display: inline;
+}
+
+nav {
+  float: right;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+nav a {
+  text-decoration: none;
+  margin: 0 10px;
+  color: var(--link-color);
+  font-weight: 700;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: var(--link-hover);
+}
+
+.home-button {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  background-image: var(--home-light);
+  transition: background-image 0.3s;
+}
+
+[data-theme="dark"] .home-button {
+  background-image: var(--home-dark);
+}
+
+/* Dropdown Container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--header-bg);
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 5px;
+  -webkit-transition: opacity 0.3s ease-in-out;
+  -moz-transition: opacity 0.3s ease-in-out;
+  -ms-transition: opacity 0.3s ease-in-out;
+  -o-transition: opacity 0.3s ease-in-out;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  opacity: 1;
+  padding: 12px 5px;
+}
+
+/* Style for each chapter link */
+.dropdown-content a {
+  color: var(--link-color);
+  padding: 10px 0px;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.3s;
+}
+
+.dropdown-content a:hover {
+  color: var(--link-hover);
+}
+
+.toggle-container {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+.toggle {
+  width: 50px;
+  height: 25px;
+  background-color: #afafaf;
+  border-radius: 25px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle-icon {
+  position: absolute;
+  top: 2.5px;
+  left: 3.5px;
+  width: 20px;
+  height: 20px;
+  background: url('../images/sun.png') no-repeat center center;
+  background-size: contain;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+/* When dark mode is active on toggle */
+.toggle.dark {
+  background-color: #4a4a4a;
+}
+
+.toggle.dark .toggle-icon {
+  transform: translateX(24px);
+  background: url('../images/moon.png') no-repeat center center;
+  background-size: contain;
+  -webkit-transform: translateX(24px);
+  -moz-transform: translateX(24px);
+  -ms-transform: translateX(24px);
+  -o-transform: translateX(24px);
+}
+
+.book-details {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.book-header {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.book-header.stretched {
+  flex-direction: column;
+  align-items: center;
+}
+
+.book-header img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.book-header .info {
+  flex: 1;
+}
+
+.book-header .info h2 {
+  margin: 0 0 10px;
+  font-size: 2rem;
+}
+
+.book-header .info p {
+  margin: 5px 0;
+}
+
+.section-divider {
+  width: 98%;
+  margin: 20px auto;
+  border-radius: 10px;
+  border-bottom: 2.5px solid var(--border-color);
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+}
+
+.manga-content {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 5px 7px;
+  background-color: var(--content-bg);
+  margin-top: 20px;
+}
+
+/* --- Dropdown Styling --- */
+/* --- Center the Dropdown --- */
+.chapter-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+/* --- Style the Label --- */
+.chapter-selector label {
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+/* --- Style the Select Dropdown --- */
+#chapterSelect {
+  appearance: none;
+  padding: 4px 8px; /* Reduced padding for a sleeker look */
+  font-size: 1rem;
+  font-weight: 500;
+  border: 2px solid var(--border-color, #a090b6);
+  border-radius: 6px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 220px;
+  text-align: center;
+}
+
+/* --- Custom Dropdown Arrow --- */
+#chapterSelect {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path fill="%23777" d="M7 10l5 5 5-5H7z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+/* --- Hover and Focus Effects --- */
+#chapterSelect:hover {
+  border-color: var(--hover-border-color, #8c79a7);
+}
+
+#chapterSelect:focus {
+  outline: none;
+  border-color: var(--hover-border-color, #6d5c92);
+  box-shadow: 0 0 4px rgba(141, 114, 174, 0.5);
+}
+
+/* --- Dropdown Options --- */
+#chapterSelect option {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+/* --- Styled Download Button (Matches Theme) --- */
+.c-btn {
+  position: relative;
+  overflow: hidden;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--button-text);
+  background-color: var(--button-bg);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Hover Effect --- */
+.c-btn:hover {
+  background-color: var(--hover-border-color);
+  transform: translateY(-2px);
+}
+
+/* --- Active (Click) Effect --- */
+.c-btn:active {
+  transform: translateY(0);
+}
+
+/* --- Hide the manga id ---*/
+#manga-id {
+  display: none;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: var(--header-bg);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+

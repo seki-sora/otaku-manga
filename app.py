@@ -7,6 +7,10 @@ from datetime import datetime
 from flask import Flask, render_template, send_from_directory, abort, request, url_for, jsonify
 from humanize import naturaltime
 
+# NEW: Markdown rendering for YAML description
+import markdown as _md
+from markupsafe import Markup, escape
+
 BASE_DIR = Path(__file__).resolve().parent
 CONTENT_DIR = BASE_DIR / "content"
 STATIC_DIR = BASE_DIR / "static"
@@ -16,6 +20,28 @@ app = Flask(__name__, static_folder=str(STATIC_DIR), template_folder=str(BASE_DI
 @app.context_processor
 def inject_datetime():
   return {"datetime": datetime}
+
+# ---------- Jinja filters ----------
+@app.template_filter('md')
+def md_filter(text):
+  """
+  Render Markdown with preserved newlines and common extras.
+  Use in templates: {{ manga.description | md }}
+  """
+  if not text:
+    return ""
+  html = _md.markdown(
+      text,
+      extensions=['extra', 'sane_lists', 'nl2br']
+  )
+  return Markup(html)
+
+@app.template_filter('nl2br')
+def nl2br(s: str):
+  """If you switch off Markdown, you can use this to preserve line breaks."""
+  if not s:
+    return ""
+  return Markup("<br>".join(escape(s).splitlines()))
 
 # ------------ helpers ------------
 def chapter_display_title(slug: str) -> str:
@@ -95,8 +121,10 @@ def scan_content():
 
     chapters = []
     for cdir in sorted([p for p in mdir.iterdir() if p.is_dir()]):
-      imgs = sorted(Path(p) for p in glob.glob(str(cdir / "*"))
-                    if p.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".gif")))
+      imgs = sorted(
+        Path(p) for p in glob.glob(str(cdir / "*"))
+        if p.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".gif"))
+      )
       if not imgs: continue
       pages = [Page(path=img, index=i) for i, img in enumerate(imgs, start=1)]
       chapters.append(Chapter(slug=cdir.name, dirpath=cdir, pages=pages))
@@ -130,7 +158,6 @@ def index():
     mangas = [m for m in mangas if any(tag == t.lower() for t in m.tags)]
 
   mangas.sort(key=lambda m: (
-      m.latest_chapter.number if m.latest_chapter else -1,
       m.latest_chapter.timestamp if m.latest_chapter else datetime.min),
       reverse=True)
 
@@ -156,7 +183,6 @@ def reader(slug, chapter_slug):
   if not manga: abort(404)
 
   chapters = manga.chapters  # ASC by number
-  # find current index by slug
   idx = next((i for i, c in enumerate(chapters) if c.slug == chapter_slug), None)
   if idx is None: abort(404)
 

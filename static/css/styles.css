@@ -86,7 +86,29 @@ a{color:inherit}
 .manga-hero{display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:start;margin:24px 0}
 @media (max-width:720px){.manga-hero{grid-template-columns:1fr}}
 .manga-cover{border-radius:14px;border:1px solid var(--border);background:var(--card);box-shadow:var(--shadow)}
-.desc{margin-top:10px;line-height:1.6}
+.title{margin:0 0 6px}
+
+/* YAML Markdown description */
+.description{
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  line-height: 1.75;
+  color: var(--fg);
+  box-shadow: var(--shadow);
+  font-size: 16px;
+  /* Myanmar-friendly fallbacks */
+  font-family: ui-sans-serif, system-ui, "Myanmar Text", "Noto Sans Myanmar",
+               "Tharlon", "Padauk", Segoe UI, Roboto, sans-serif;
+  word-break: break-word;
+}
+.description p{ margin: 0 0 .9em; }
+.description h1,.description h2,.description h3{ margin: 1.1em 0 .4em; }
+.description ul,.description ol{ margin: .6em 0 .9em 1.25em; }
+.description strong{ font-weight: 700; }
+
 .chapters{list-style:none;padding:0;margin:14px 0;display:grid;gap:10px}
 .chapter-link{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--fg);background:var(--card);border:1px solid var(--border);padding:12px 14px;border-radius:12px;transition:transform .1s, background .15s}
 .chapter-link:hover{transform:translateX(2px);background:linear-gradient(180deg,rgba(124,58,237,.06),transparent)}
@@ -118,7 +140,7 @@ a{color:inherit}
 .reader-info .ri-sep{ opacity:.7 }
 :root.header-hidden .reader-info{opacity:0;transform:translateY(-8px);pointer-events:none}
 
-/* Floating Prev/Next FABs (desktop & mobile) */
+/* Floating Prev/Next FABs */
 .fab-nav{position:fixed;inset:0;pointer-events:none}
 .fab-btn{
   position:fixed;top:50%;transform:translateY(-50%);
@@ -134,7 +156,7 @@ a{color:inherit}
 @media (max-width:760px){.fab-btn{width:40px;height:40px;font-size:20px}.fab-btn.prev{left:10px}.fab-btn.next{right:10px}}
 
 /* Beneath-the-panel sticky Prev/Next (never overlays pages) */
-.reader.has-sticky .pages{ padding-bottom:110px; } /* reserve space so last image isn’t covered */
+.reader.has-sticky .pages{ padding-bottom:110px; }
 .sticky-bar{
   position: sticky;
   bottom: calc(12px + env(safe-area-inset-bottom));
@@ -153,7 +175,7 @@ a{color:inherit}
 .pagination{display:flex;justify-content:center;align-items:center;gap:10px;margin:22px 0}
 .site-footer{border-top:1px solid var(--border);padding:26px 0;margin-top:28px;text-align:center}
 
-/* Toggle switch (aligned) */
+/* Toggle switch */
 .nav{align-items:center}
 .nav .toggle{display:inline-flex;align-items:center;height:28px;margin-left:4px}
 .toggle{--w:56px;--h:28px;--pad:3px;border:none;background:transparent;cursor:pointer}

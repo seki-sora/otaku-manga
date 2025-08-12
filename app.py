@@ -264,7 +264,7 @@ def index():
         q=q, tag=tag, all_tags=all_tags, naturaltime=naturaltime_utc
     )
 
-@app.route("/m/<slug>")
+@app.route("/manga/<slug>")
 def manga_detail(slug):
     manga = scan_content().get(slug)
     if not manga:
@@ -275,7 +275,7 @@ def manga_detail(slug):
         manga=manga, chapters=chapters_desc, naturaltime=naturaltime_utc
     )
 
-@app.route("/m/<slug>/<chapter_slug>")
+@app.route("/manga/<slug>/<chapter_slug>")
 def reader(slug, chapter_slug):
     manga = scan_content().get(slug)
     if not manga:

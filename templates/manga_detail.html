@@ -21,7 +21,6 @@
     {% endif %}
 
     {% if manga.description %}
-      <!-- Render Markdown description from YAML -->
       <div class="description">
         {{ manga.description | md }}
       </div>
@@ -30,6 +29,19 @@
 </section>
 
 <hr style="border:0;border-top:1px solid var(--border);opacity:.7;margin:12px 0 6px" />
+
+<!-- Chapter sort control -->
+<form class="sort-bar" method="get" action="{{ url_for('manga_detail', slug=manga.slug) }}"
+      style="margin:6px 0 10px; display:flex; gap:8px; align-items:center;">
+  <label for="sort" class="muted">Sort: </label>
+  <select id="sort" name="sort" onchange="this.form.submit()"
+          style="background:var(--card); color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:8px 10px;">
+    <option value="number_desc"  {{ 'selected' if sort=='number_desc'  else '' }}>Chapter (Descending)</option>
+    <option value="number_asc"   {{ 'selected' if sort=='number_asc'   else '' }}>Chapter (Ascending)</option>
+    <option value="updated_desc" {{ 'selected' if sort=='updated_desc' else '' }}>Updated (Newest)</option>
+    <option value="updated_asc"  {{ 'selected' if sort=='updated_asc'  else '' }}>Updated (Oldest)</option>
+  </select>
+</form>
 
 <h2>Chapters</h2>
 <ul class="chapters">

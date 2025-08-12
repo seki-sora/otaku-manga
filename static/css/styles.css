@@ -106,6 +106,8 @@ a{color:inherit}
 .description ul,.description ol{ margin:.6em 0 .9em 1.25em }
 .description strong{ font-weight:700 }
 
+.sort-bar{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin:6px 0 10px}
+
 .chapters{list-style:none;padding:0;margin:14px 0;display:grid;gap:10px}
 .chapter-link{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--fg);background:var(--card);border:1px solid var(--border);padding:12px 14px;border-radius:12px;transition:transform .1s, background .15s}
 .chapter-link:hover{transform:translateX(2px);background:linear-gradient(180deg,rgba(124,58,237,.06),transparent)}

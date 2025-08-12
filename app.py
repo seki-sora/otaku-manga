@@ -40,13 +40,9 @@ if USE_MD:
             return ""
         return Markup("<br>".join(escape(s).splitlines()))
 
-# ---------- Time helpers (the important part) ----------
+# ---------- Time helpers ----------
 def to_utc_naive(dt: datetime) -> datetime:
-    """
-    Normalize any datetime to UTC-naïve:
-    - aware -> convert to UTC, drop tz
-    - naïve -> assume it's already UTC and return
-    """
+    """Normalize any datetime to UTC-naïve."""
     if dt.tzinfo is not None:
         return dt.astimezone(timezone.utc).replace(tzinfo=None)
     return dt
@@ -63,12 +59,9 @@ def parse_iso(dt: str | None) -> datetime:
 
 def naturaltime_utc(dt: datetime) -> str:
     """Show 'x minutes ago' using aware UTC datetimes (lint-safe)."""
-    # ensure the value is aware UTC
     dt_aware = dt.astimezone(timezone.utc) if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
-    # use aware UTC 'now'
     now_aware = datetime.now(timezone.utc)
     return _naturaltime(dt_aware, when=now_aware)
-
 
 # ---------- Other helpers ----------
 IMG_EXTS = (".jpg", ".jpeg", ".png", ".webp", ".gif")
@@ -125,7 +118,7 @@ class Manga:
         self.tags = meta.get("tags", [])
         self.status = meta.get("status", "Ongoing")
         self.cover = meta.get("cover", "cover.jpg")
-        self.chapters = chapters  # ASC
+        self.chapters = chapters  # ASC (scanner order)
 
     @property
     def cover_url(self):
@@ -192,7 +185,7 @@ def scan_content():
 
             pages = [Page(path=img, index=i) for i, img in enumerate(img_paths, start=1)]
 
-            # directory mtime fallback (build aware UTC, then to UTC-naïve)
+            # directory mtime fallback (aware UTC -> UTC-naïve)
             try:
                 dir_ts = to_utc_naive(datetime.fromtimestamp(cdir.stat().st_mtime, tz=timezone.utc))
             except Exception:
@@ -215,6 +208,7 @@ def scan_content():
                 updated=updated, timestamp=dir_ts
             ))
 
+        # Store ASC internally; we’ll sort per-view as needed
         chapters.sort(key=lambda c: (c.number, c.updated, c.timestamp))
         mangas[slug] = Manga(slug=slug, meta=meta, dirpath=mdir, chapters=chapters)
 
@@ -230,6 +224,20 @@ def paginate(items, page, per_page=16):
     s = (page - 1) * per_page
     e = s + per_page
     return items[s:e], page, pages, total
+
+# ---------- Chapter sort helpers ----------
+def chapter_sort_params(sort_name: str):
+    """
+    Return (key_fn, reverse) for the selected chapter sort.
+    Defaults to 'number_desc'.
+    """
+    mapping = {
+        "number_desc":  (lambda c: (c.number, c.updated, c.timestamp), True),
+        "number_asc":   (lambda c: (c.number, c.updated, c.timestamp), False),
+        "updated_desc": (lambda c: (c.updated, c.number, c.timestamp), True),
+        "updated_asc":  (lambda c: (c.updated, c.number, c.timestamp), False),
+    }
+    return mapping.get(sort_name or "number_desc", mapping["number_desc"])
 
 # ---------- Routes ----------
 @app.route("/")
@@ -248,7 +256,7 @@ def index():
     if tag:
         mangas = [m for m in mangas if any(tag == t.lower() for t in m.tags)]
 
-    # Sort by last updated
+    # Sort by last updated for library
     mangas.sort(key=lambda m: m.updated, reverse=True)
 
     page = int(request.args.get("page", 1))
@@ -257,7 +265,6 @@ def index():
 
     all_tags = sorted({t for m in scan_content().values() for t in m.tags})
 
-    # NOTE: pass our UTC-stable naturaltime
     return render_template(
         "index.html",
         mangas=items, page=page, pages=pages, total=total,
@@ -269,10 +276,14 @@ def manga_detail(slug):
     manga = scan_content().get(slug)
     if not manga:
         abort(404)
-    chapters_desc = sorted(manga.chapters, key=lambda c: (c.updated, c.number), reverse=True)
+
+    sort = request.args.get("sort", "number_desc")
+    key_fn, rev = chapter_sort_params(sort)
+    chapters_sorted = sorted(manga.chapters, key=key_fn, reverse=rev)
+
     return render_template(
         "manga_detail.html",
-        manga=manga, chapters=chapters_desc, naturaltime=naturaltime_utc
+        manga=manga, chapters=chapters_sorted, sort=sort, naturaltime=naturaltime_utc
     )
 
 @app.route("/manga/<slug>/<chapter_slug>")
@@ -281,7 +292,7 @@ def reader(slug, chapter_slug):
     if not manga:
         abort(404)
 
-    chapters = manga.chapters  # ASC
+    chapters = manga.chapters  # ASC internally
     try:
         idx = next(i for i, c in enumerate(chapters) if c.slug == chapter_slug)
     except StopIteration:

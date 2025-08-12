@@ -4,11 +4,11 @@ on:
   push:
     branches: [ main, master ]
     paths:
+      # run when content changes, or when the workflow / script changes
       - "content/**"
+      - "!content/_updated.yml"            # <-- exclude the manifest itself
       - ".github/workflows/update-manifest.yml"
       - "tools/update_manifest.py"
-    paths-ignore:
-      - "content/_updated.yml"
   workflow_dispatch:
 
 permissions:
@@ -16,6 +16,8 @@ permissions:
 
 jobs:
   build:
+    # extra safety: don't run if the last pusher is the bot
+    if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (full history)
@@ -38,6 +40,7 @@ jobs:
           python tools/update_manifest.py
 
       - name: Commit manifest if changed
+        shell: bash
         run: |
           if [[ -n "$(git status --porcelain content/_updated.yml)" ]]; then
             git config user.name "github-actions[bot]"

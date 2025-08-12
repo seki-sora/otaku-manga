@@ -38,7 +38,7 @@
       <a class="chapter-link" href="{{ url_for('reader', slug=manga.slug, chapter_slug=c.slug) }}">
         <span class="ch-title">{{ c.display_title }}</span>
         <span class="meta muted">
-          {{ c.pages|length }} pages · {{ naturaltime(c.timestamp) }}
+          {{ c.pages|length }} pages · {{ naturaltime(c.updated) }}
         </span>
       </a>
     </li>

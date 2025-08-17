@@ -1,53 +1,41 @@
-name: Update content/_updated.yml
+name: Keepalive
 
 on:
-  push:
-    branches: [ main, master ]
-    paths:
-      # run when content changes, or when the workflow / script changes
-      - "content/**"
-      - "!content/_updated.yml"            # <-- exclude the manifest itself
-      - ".github/workflows/update-manifest.yml"
-      - "tools/update_manifest.py"
+  schedule:
+    - cron: "*/20 * * * *"   # every 20 minutes
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  build:
-    # extra safety: don't run if the last pusher is the bot
-    if: ${{ github.actor != 'github-actions[bot]' }}
+  ping:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout (full history)
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install deps for manifest script
+      - name: Warm origin(s)
+        # don't fail the workflow even if all attempts end up 503
+        continue-on-error: true
+        env:
+          URLS: |
+            https://otaku-manga.site/
+            https://otaku-manga.onrender.com/
         run: |
-          python -m pip install --upgrade pip
-          pip install pyyaml
+          set -u
+          # optional: hit a very cheap endpoint if you add /health in your app
+          WARM_PATH="/health"
+          for URL in $URLS; do
+            echo "::group::Warming $URL"
+            TARGET="${URL%/}${WARM_PATH}"
+            # 1) quick HEAD to trigger wake-up (ignore result)
+            curl -I -sS --connect-timeout 10 --max-time 20 "$TARGET" || true
 
-      - name: Generate manifest
-        run: |
-          python tools/update_manifest.py
-
-      - name: Commit manifest if changed
-        shell: bash
-        run: |
-          if [[ -n "$(git status --porcelain content/_updated.yml)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add content/_updated.yml
-            git commit -m "chore: update content/_updated.yml (auto)"
-            git push
-          else
-            echo "No manifest changes."
-          fi
+            # 2) poll until we get a 2xx/3xx or give up
+            for i in {1..10}; do
+              CODE=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET")
+              echo "Attempt $i -> HTTP $CODE"
+              if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]; then
+                echo "Healthy at $TARGET"
+                break
+              fi
+              sleep 15
+            done
+            echo "::endgroup::"
+          done

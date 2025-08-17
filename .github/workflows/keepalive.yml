@@ -16,7 +16,6 @@ jobs:
         env:
           URLS: |
             https://otaku-manga.site/
-            https://otaku-manga.onrender.com/
         run: |
           set -u
           # optional: hit a very cheap endpoint if you add /health in your app

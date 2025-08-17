@@ -2,13 +2,40 @@ name: Keepalive
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # every 30 minutes
+    - cron: "*/20 * * * *"   # every 20 minutes
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Curl homepage
+      - name: Warm origin(s)
+        # don't fail the workflow even if all attempts end up 503
+        continue-on-error: true
+        env:
+          URLS: |
+            https://otaku-manga.site/
+            https://otaku-manga.onrender.com/
         run: |
-          curl -sSfL https://otaku-manga.site/ > /dev/null
+          set -u
+          # optional: hit a very cheap endpoint if you add /health in your app
+          WARM_PATH="/health"
+          for URL in $URLS; do
+            echo "::group::Warming $URL"
+            TARGET="${URL%/}${WARM_PATH}"
+            # 1) quick HEAD to trigger wake-up (ignore result)
+            curl -I -sS --connect-timeout 10 --max-time 20 "$TARGET" || true
+
+            # 2) poll until we get a 2xx/3xx or give up
+            for i in {1..10}; do
+              CODE=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET")
+              echo "Attempt $i -> HTTP $CODE"
+              if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]; then
+                echo "Healthy at $TARGET"
+                break
+              fi
+              sleep 15
+            done
+            echo "::endgroup::"
+          done

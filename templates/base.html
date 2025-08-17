@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow">
   <title>{% block title %}Otaku Manga{% endblock %}</title>
+  <link rel="canonical" href="{{ request.url }}"/>
+  <meta name="description" content="Read manga on Otaku Manga — browse titles, chapters, and updates."/>
   <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
   <script defer src="{{ url_for('static', filename='js/theme.js') }}"></script>

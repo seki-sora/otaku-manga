@@ -1,7 +1,7 @@
 import os, glob, re, time, yaml
 from pathlib import Path
 from datetime import datetime, timezone
-from flask import Flask, render_template, send_from_directory, abort, request, url_for, jsonify
+from flask import Flask, render_template, send_from_directory, abort, request, url_for, jsonify, Response
 from humanize import naturaltime as _naturaltime
 
 # Optional: render manga.yml description as Markdown
@@ -335,6 +335,56 @@ def api_mangas():
             "latest_chapter": m.latest_chapter.slug if m.latest_chapter else None,
         })
     return jsonify(data)
+
+
+@app.route("/robots.txt")
+def robots_txt():
+    txt = "\n".join([
+        "User-agent: *",
+        "Allow: /",
+        "",
+        f"Sitemap: https://otaku-manga.site/sitemap.xml",
+    ])
+    return Response(txt, mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    # Build a simple dynamic sitemap from your content
+    # Uses absolute URLs (external=True) so Google gets full links
+    urls = []
+    urls.append({
+        "loc": url_for("index", _external=True),
+        "lastmod": datetime.utcnow().date().isoformat(),
+        "priority": "1.0"
+    })
+
+    data = scan_content()
+    for m in data.values():
+        urls.append({
+            "loc": url_for("manga_detail", slug=m.slug, _external=True),
+            "lastmod": (m.updated or datetime.utcnow()).date().isoformat(),
+            "priority": "0.8"
+        })
+        for c in m.chapters:
+            urls.append({
+                "loc": url_for("reader", slug=m.slug, chapter_slug=c.slug, _external=True),
+                "lastmod": (c.updated or m.updated or datetime.utcnow()).date().isoformat(),
+                "priority": "0.6"
+            })
+
+    xml_parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ]
+    for u in urls:
+        xml_parts.append("<url>")
+        xml_parts.append(f"<loc>{u['loc']}</loc>")
+        xml_parts.append(f"<lastmod>{u['lastmod']}</lastmod>")
+        xml_parts.append(f"<priority>{u['priority']}</priority>")
+        xml_parts.append("</url>")
+    xml_parts.append("</urlset>")
+    return Response("\n".join(xml_parts), mimetype="application/xml")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "5000"))

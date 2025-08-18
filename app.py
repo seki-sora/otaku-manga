@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 from flask import Flask, render_template, send_from_directory, abort, request, url_for, jsonify, Response
 from humanize import naturaltime as _naturaltime
+from xml.sax.saxutils import escape as xml_escape
 
 # Optional: render manga.yml description as Markdown
 try:
@@ -62,6 +63,29 @@ def naturaltime_utc(dt: datetime) -> str:
     dt_aware = dt.astimezone(timezone.utc) if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
     now_aware = datetime.now(timezone.utc)
     return _naturaltime(dt_aware, when=now_aware)
+
+def _utc_aware(dt: datetime) -> datetime:
+    """Return an aware UTC datetime; RSS/linters prefer this."""
+    return dt.astimezone(timezone.utc) if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+def _rfc2822(dt: datetime) -> str:
+    from email.utils import format_datetime
+    return format_datetime(_utc_aware(dt))
+
+def _recent_updates(limit: int = 50):
+    """List of (updated_dt, manga, chapter) across all manga, newest first."""
+    items = []
+    for m in scan_content().values():
+        for c in m.chapters:
+            items.append((c.updated, m, c))
+    items.sort(key=lambda t: t[0], reverse=True)
+    return items[:limit]
+
+def _lastmod_date(dt: datetime | None) -> str:
+    """ISO date for sitemaps, using an aware UTC fallback."""
+    if not dt or dt == datetime.min:
+        return datetime.now(timezone.utc).date().isoformat()
+    return _utc_aware(dt).date().isoformat()
 
 # ---------- Other helpers ----------
 IMG_EXTS = (".jpg", ".jpeg", ".png", ".webp", ".gif")
@@ -335,7 +359,45 @@ def api_mangas():
             "latest_chapter": m.latest_chapter.slug if m.latest_chapter else None,
         })
     return jsonify(data)
+@app.route("/feed.xml")
+def feed_xml():
+    items = _recent_updates(50)
+    site_title = "Otaku Manga"
+    channel_title = f"{site_title} — Latest Updates"
+    site_link = url_for("index", _external=True)
+    self_link = url_for("feed_xml", _external=True)
 
+    # was: datetime.utcnow()
+    last_build = items[0][0] if items else datetime.now(timezone.utc)
+
+    parts = []
+    parts.append('<?xml version="1.0" encoding="UTF-8"?>')
+    parts.append('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">')
+    parts.append("<channel>")
+    parts.append(f"<title>{xml_escape(channel_title)}</title>")
+    parts.append(f"<link>{xml_escape(site_link)}</link>")
+    parts.append(f"<description>{xml_escape('Newest chapter releases and updates')}</description>")
+    parts.append("<language>en</language>")
+    parts.append(f"<lastBuildDate>{_rfc2822(last_build)}</lastBuildDate>")
+    parts.append(f'<atom:link href="{xml_escape(self_link)}" rel="self" type="application/rss+xml" />')
+
+    for dt, manga, ch in items:
+        item_title = f"{manga.title} — {ch.display_title}"
+        item_link = url_for("reader", slug=manga.slug, chapter_slug=ch.slug, _external=True)
+        guid = item_link  # stable enough for this use
+        desc = f"{manga.title} • {ch.display_title} • {len(ch.pages)} pages"
+
+        parts.append("<item>")
+        parts.append(f"<title>{xml_escape(item_title)}</title>")
+        parts.append(f"<link>{xml_escape(item_link)}</link>")
+        parts.append(f"<guid isPermaLink='true'>{xml_escape(guid)}</guid>")
+        parts.append(f"<pubDate>{_rfc2822(dt)}</pubDate>")
+        parts.append(f"<description><![CDATA[{desc}]]></description>")
+        parts.append("</item>")
+
+    parts.append("</channel></rss>")
+    xml = "\n".join(parts)
+    return Response(xml, mimetype="application/rss+xml")
 
 @app.route("/robots.txt")
 def robots_txt():
@@ -350,26 +412,23 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    # Build a simple dynamic sitemap from your content
-    # Uses absolute URLs (external=True) so Google gets full links
-    urls = []
-    urls.append({
+    urls = [{
         "loc": url_for("index", _external=True),
-        "lastmod": datetime.utcnow().date().isoformat(),
+        "lastmod": _lastmod_date(datetime.now(timezone.utc)),
         "priority": "1.0"
-    })
+    }]
 
     data = scan_content()
     for m in data.values():
         urls.append({
             "loc": url_for("manga_detail", slug=m.slug, _external=True),
-            "lastmod": (m.updated or datetime.utcnow()).date().isoformat(),
+            "lastmod": _lastmod_date(m.updated),
             "priority": "0.8"
         })
         for c in m.chapters:
             urls.append({
                 "loc": url_for("reader", slug=m.slug, chapter_slug=c.slug, _external=True),
-                "lastmod": (c.updated or m.updated or datetime.utcnow()).date().isoformat(),
+                "lastmod": _lastmod_date(c.updated or m.updated),
                 "priority": "0.6"
             })
 
@@ -385,6 +444,7 @@ def sitemap_xml():
         xml_parts.append("</url>")
     xml_parts.append("</urlset>")
     return Response("\n".join(xml_parts), mimetype="application/xml")
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "5000"))

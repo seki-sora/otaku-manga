@@ -1,0 +1,9 @@
+{% macro pagination(page, pages, q='', tag='') %}
+  {% if pages > 1 %}
+    <nav class="pagination">
+      {% if page > 1 %}<a class="btn" href="{{ url_for('index', page=page-1, q=q, tag=tag) }}">Prev</a>{% endif %}
+      <span class="muted">Page {{ page }} / {{ pages }}</span>
+      {% if page < pages %}<a class="btn" href="{{ url_for('index', page=page+1, q=q, tag=tag) }}">Next</a>{% endif %}
+    </nav>
+  {% endif %}
+{% endmacro %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% from '_components.html' import pagination %}
+{% block title %}Otaku Manga — Browse{% endblock %}
+{% block content %}
+  <section class="filters">
+    <div class="chips">
+      <a class="chip {% if not tag %}active{% endif %}" href="{{ url_for('index') }}">All</a>
+      {% for t in all_tags %}
+        <a class="chip {% if tag==t.lower() %}active{% endif %}" href="{{ url_for('index', tag=t) }}">{{ t }}</a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="grid">
+    {% for m in mangas %}
+      <a class="card" href="{{ url_for('manga_detail', slug=m.slug) }}" aria-label="Open {{ m.title }}">
+        <img class="cover" src="{{ m.cover_url }}" alt="{{ m.title }} cover" loading="lazy" />
+        <div class="card-body">
+          <h3 class="title">{{ m.title }}</h3>
+          <p class="meta">{{ m.author }}</p>
+          <p class="meta">{{ m.latest_chapter.display_title }} · {% if m.latest_chapter %}Updated {{ naturaltime(m.updated) }}{% else %}No chapters yet{% endif %}</p>
+          <div class="tags">
+            {% for t in m.tags[:4] %}<span class="tag">{{ t }}</span>{% endfor %}
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  </section>
+
+  {{ pagination(page, pages, q=request.args.get('q',''), tag=tag) }}
+{% endblock %}

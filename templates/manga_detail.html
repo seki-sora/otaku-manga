@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{{ manga.title }} | Otaku Manga{% endblock %}
+{% block content %}
+
+<section class="manga-hero">
+  <img class="manga-cover" src="{{ manga.cover_url }}" alt="{{ manga.title }} cover" />
+  <div>
+    <h1 class="title">{{ manga.title }}</h1>
+    <p class="muted">
+      by <strong>{{ manga.author }}</strong>
+      · art <strong>{{ manga.artist }}</strong>
+      · <em>{{ manga.status }}</em>
+    </p>
+
+    {% if manga.tags %}
+    <div class="tags" style="margin:8px 0 10px;">
+      {% for t in manga.tags %}
+        <span class="tag">{{ t }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if manga.description %}
+      <div class="description">
+        {{ manga.description | md }}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<hr style="border:0;border-top:1px solid var(--border);opacity:.7;margin:12px 0 6px" />
+
+<!-- Chapter sort control -->
+<form class="sort-bar" method="get" action="{{ url_for('manga_detail', slug=manga.slug) }}"
+      style="margin:6px 0 10px; display:flex; gap:8px; align-items:center;">
+  <label for="sort" class="muted">Sort: </label>
+  <select id="sort" name="sort" onchange="this.form.submit()"
+          style="background:var(--card); color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:8px 10px;">
+    <option value="number_desc"  {{ 'selected' if sort=='number_desc'  else '' }}>Chapter (Descending)</option>
+    <option value="number_asc"   {{ 'selected' if sort=='number_asc'   else '' }}>Chapter (Ascending)</option>
+    <option value="updated_desc" {{ 'selected' if sort=='updated_desc' else '' }}>Updated (Newest)</option>
+    <option value="updated_asc"  {{ 'selected' if sort=='updated_asc'  else '' }}>Updated (Oldest)</option>
+  </select>
+</form>
+
+<h2>Chapters</h2>
+<ul class="chapters">
+  {% for c in chapters %}
+    <li>
+      <a class="chapter-link" href="{{ url_for('reader', slug=manga.slug, chapter_slug=c.slug) }}">
+        <span class="ch-title">{{ c.display_title }}</span>
+        <span class="meta muted">
+          {{ c.pages|length }} pages · {{ naturaltime(c.updated) }}
+        </span>
+      </a>
+    </li>
+  {% else %}
+    <li class="muted">No chapters yet.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

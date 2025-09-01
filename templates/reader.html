@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Read {{ manga.title }} — {{ chapter.display_title }} | Otaku Manga{% endblock %}
+{% block content %}
+  <article class="reader {% if prev_ch or next_ch %}has-sticky{% endif %}" data-slug="{{ manga.slug }}" data-chapter="{{ chapter.slug }}">
+
+    <header class="reader-header">
+      <div class="nav">
+        {% if prev_ch %}
+          <a class="btn" href="{{ url_for('reader', slug=manga.slug, chapter_slug=prev_ch.slug) }}">⟵ Prev</a>
+        {% endif %}
+        {% if next_ch %}
+          <a class="btn" href="{{ url_for('reader', slug=manga.slug, chapter_slug=next_ch.slug) }}">Next ⟶</a>
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- Sticky, centered title/chapter pill -->
+    <div class="reader-info">
+      <a class="ri-title" href="{{ url_for('manga_detail', slug=manga.slug) }}">{{ manga.title }}</a>
+      <span class="ri-sep">/</span>
+      <strong class="ri-chapter">{{ chapter.display_title }}</strong>
+    </div>
+
+    {% if prev_ch or next_ch %}
+    <div class="fab-nav" aria-label="Chapter navigation">
+      {% if prev_ch %}
+      <a class="fab-btn prev" href="{{ url_for('reader', slug=manga.slug, chapter_slug=prev_ch.slug) }}" title="Previous chapter (←)">⟵</a>
+      {% endif %}
+      {% if next_ch %}
+      <a class="fab-btn next" href="{{ url_for('reader', slug=manga.slug, chapter_slug=next_ch.slug) }}" title="Next chapter (→)">⟶</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="pages" id="pages">
+      {% for p in chapter.pages %}
+        <figure class="page" data-index="{{ loop.index }}">
+          <img src="{{ p.url }}" alt="Page {{ loop.index }}" loading="lazy" />
+          <div class="page-num">{{ loop.index }} / {{ chapter.pages|length }}</div>
+        </figure>
+      {% endfor %}
+    </div>
+
+    {% if prev_ch or next_ch %}
+      <!-- Beneath-the-panel sticky pair (takes layout space; never overlays pages) -->
+      <div class="sticky-bar">
+        {% if prev_ch %}
+        <a class="sticky-btn" href="{{ url_for('reader', slug=manga.slug, chapter_slug=prev_ch.slug) }}">⟵ Prev</a>
+        {% endif %}
+        {% if next_ch %}
+        <a class="sticky-btn" href="{{ url_for('reader', slug=manga.slug, chapter_slug=next_ch.slug) }}">Next ⟶</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <footer class="reader-footer">
+      <div class="nav">
+        {% if prev_ch %}
+          <a class="btn" href="{{ url_for('reader', slug=manga.slug, chapter_slug=prev_ch.slug) }}">⟵ Prev</a>
+        {% endif %}
+        <a class="btn" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Back to Top</a>
+        {% if next_ch %}
+          <a class="btn" href="{{ url_for('reader', slug=manga.slug, chapter_slug=next_ch.slug) }}">Next ⟶</a>
+        {% endif %}
+      </div>
+    </footer>
+  </article>
+
+  <script defer src="{{ url_for('static', filename='js/reader.js') }}"></script>
+{% endblock %}
